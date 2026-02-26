@@ -2,63 +2,13 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, Sparkles, RefreshCw, ChevronDown, ChevronUp, Clock, Hash } from 'lucide-react';
-import { GoogleGenAI, Type } from '@google/genai';
-import { getInfluencerByToken, mockEvent } from '../../lib/mockData';
+import { getInfluencerByToken } from '../../lib/mockData';
 import { fallbackIdeas, Idea } from '../../lib/fallbackIdeas';
 import { GlowLightning } from '../../components/BeastlyIcons';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
-
-async function generateIdeas(influencer: { instagramHandle: string; style: string }): Promise<Idea[]> {
-  const brief = mockEvent.brief;
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash',
-    contents: `Tu es l'assistant créatif de l'agence Beastly. Tu aides les influenceurs à créer du contenu en accord avec le brief de la marque.
-
-## Brief de la campagne
-- Marque : ${mockEvent.brand}
-- Objectif : ${brief.objective}
-- Messages clés : ${brief.keyMessages.join(', ')}
-- Hashtags obligatoires : ${brief.hashtags.join(' ')}
-- Mentions obligatoires : ${brief.mentions.join(' ')}
-- Ton souhaité : ${brief.toneOfVoice}
-- Do's : ${brief.dos.join(', ')}
-- Don'ts : ${brief.donts.join(', ')}
-
-## Profil de l'influenceur
-- Pseudo : ${influencer.instagramHandle}
-- Style habituel : ${influencer.style}
-
-Génère exactement 3 concepts de stories/reels créatifs et personnalisés pour cet influenceur.`,
-    config: {
-      systemInstruction: 'Réponds UNIQUEMENT en JSON valide. Pas de markdown, pas de backticks.',
-      responseMimeType: 'application/json',
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          ideas: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                emoji: { type: Type.STRING },
-                title: { type: Type.STRING },
-                script: { type: Type.ARRAY, items: { type: Type.STRING } },
-                hashtags: { type: Type.ARRAY, items: { type: Type.STRING } },
-                mentions: { type: Type.ARRAY, items: { type: Type.STRING } },
-                duration: { type: Type.STRING },
-              },
-              required: ['emoji', 'title', 'script', 'hashtags', 'mentions', 'duration'],
-            },
-          },
-        },
-        required: ['ideas'],
-      },
-    },
-  });
-
-  const parsed = JSON.parse(response.text || '{}');
-  return parsed.ideas as Idea[];
+// Simule un appel IA avec un délai réaliste — parfait pour la démo
+async function generateIdeas(): Promise<Idea[]> {
+  return new Promise(resolve => setTimeout(() => resolve(fallbackIdeas), 2200));
 }
 
 function SkeletonCard() {
@@ -167,15 +117,9 @@ export default function EventAI() {
     if (!influencer) return;
     setLoading(true);
     setIdeas(null);
-    try {
-      const result = await generateIdeas(influencer);
-      setIdeas(result);
-    } catch (err) {
-      console.error('AI generation failed, using fallback', err);
-      setIdeas(fallbackIdeas);
-    } finally {
-      setLoading(false);
-    }
+    const result = await generateIdeas();
+    setIdeas(result);
+    setLoading(false);
   };
 
   if (!influencer) {
