@@ -5,38 +5,20 @@ import { BeastlyEye, BeastlyDocument, BeastlyMegaphone, BeastlyDollar, BeastlyCu
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  role: 'ops' | 'creator';
-  setRole: (role: 'ops' | 'creator') => void;
 }
 
-const opsNavItems = [
+const navItems = [
   { id: 'dashboard', label: 'Dashboard', Icon: () => <BeastlyEye size={28} bg="green" /> },
   { id: 'events', label: 'Briefs & Invitations', Icon: () => <BeastlyMegaphone size={28} bg="orange" /> },
-  { id: 'creators', label: 'Trouver des Créateurs', Icon: () => <BeastlySmiley size={28} bg="blue" /> },
+  { id: 'creators', label: 'Sourcing Créateurs', Icon: () => <BeastlySmiley size={28} bg="blue" /> },
   { id: 'contents', label: 'Contenus déposés', Icon: () => <BeastlyDocument size={28} bg="green" /> },
   { id: 'admin', label: 'Administratif', Icon: () => <BeastlyDollar size={28} bg="orange" /> },
   { id: 'assetbox', label: 'Asset Box', Icon: () => <BeastlyCursor size={28} bg="blue" /> },
   { id: 'trends', label: 'Tendances & Veilles', Icon: () => <BeastlyEye size={28} bg="green" /> },
 ];
 
-const creatorNavItems = [
-  { id: 'creator-dashboard', label: 'Mon espace', Icon: () => <BeastlyEye size={28} bg="green" /> },
-  { id: 'creator-brief', label: 'Mon brief', Icon: () => <BeastlyMegaphone size={28} bg="orange" /> },
-  { id: 'creator-upload', label: 'Mes contenus', Icon: () => <BeastlyDocument size={28} bg="green" /> },
-  { id: 'creator-contracts', label: 'Mes contrats', Icon: () => <BeastlyDollar size={28} bg="orange" /> },
-  { id: 'assetbox', label: 'Asset Box', Icon: () => <BeastlyCursor size={28} bg="blue" /> },
-];
-
-export default function Sidebar({ activeTab, setActiveTab, role, setRole }: SidebarProps) {
+export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const navItems = role === 'ops' ? opsNavItems : creatorNavItems;
-
-  const handleRoleSwitch = (newRole: 'ops' | 'creator') => {
-    setRole(newRole);
-    setActiveTab(newRole === 'ops' ? 'dashboard' : 'creator-dashboard');
-    setIsOpen(false);
-  };
 
   return (
     <>
@@ -61,7 +43,7 @@ export default function Sidebar({ activeTab, setActiveTab, role, setRole }: Side
         ].join(' ')}
       >
         {/* Logo */}
-        <div className="p-8 pb-4">
+        <div className="p-8 pb-6">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 bg-beastly-dark rounded-full flex items-center justify-center">
               <Zap className="text-beastly-green fill-beastly-green" size={20} />
@@ -69,38 +51,14 @@ export default function Sidebar({ activeTab, setActiveTab, role, setRole }: Side
             <div>
               <span className="text-2xl font-black tracking-tight text-beastly-dark">Beastly Event</span>
               <p className="text-[9px] font-extrabold uppercase tracking-widest text-beastly-dark/40 -mt-0.5">
-                {role === 'ops' ? 'OPS Portal' : 'Creator Space'}
+                OPS Portal — Interne
               </p>
             </div>
           </div>
         </div>
 
-        {/* Role toggle */}
-        <div className="px-5 pb-3">
-          <div className="p-1 bg-beastly-dark/10 rounded-2xl flex gap-1">
-            <button
-              onClick={() => handleRoleSwitch('ops')}
-              className={[
-                'flex-1 py-2.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all',
-                role === 'ops' ? 'bg-beastly-dark text-beastly-green' : 'text-beastly-dark/50 hover:text-beastly-dark'
-              ].join(' ')}
-            >
-              Vue OPS
-            </button>
-            <button
-              onClick={() => handleRoleSwitch('creator')}
-              className={[
-                'flex-1 py-2.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all',
-                role === 'creator' ? 'bg-beastly-dark text-beastly-green' : 'text-beastly-dark/50 hover:text-beastly-dark'
-              ].join(' ')}
-            >
-              Vue Créateur
-            </button>
-          </div>
-        </div>
-
         {/* Nav Label */}
-        <div className="px-8 pt-3 pb-3">
+        <div className="px-8 pb-3">
           <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-beastly-dark/40">Navigation</p>
         </div>
 
@@ -133,23 +91,13 @@ export default function Sidebar({ activeTab, setActiveTab, role, setRole }: Side
 
         {/* Profile */}
         <div className="p-5">
-          {role === 'ops' ? (
-            <div className="p-4 bg-beastly-dark rounded-2xl flex items-center gap-3">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=OPS" alt="OPS" className="w-10 h-10 rounded-full bg-beastly-beige" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-extrabold text-beastly-beige">Beastly OPS</p>
-                <p className="text-[10px] font-bold text-beastly-beige/40 uppercase tracking-widest">Responsable Events</p>
-              </div>
+          <div className="p-4 bg-beastly-dark rounded-2xl flex items-center gap-3">
+            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=OPS" alt="OPS" className="w-10 h-10 rounded-full bg-beastly-beige" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-extrabold text-beastly-beige">Beastly OPS</p>
+              <p className="text-[10px] font-bold text-beastly-beige/40 uppercase tracking-widest">Responsable Events</p>
             </div>
-          ) : (
-            <div className="p-4 bg-beastly-dark rounded-2xl flex items-center gap-3">
-              <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Lea" alt="Léa" className="w-10 h-10 rounded-full bg-beastly-beige" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-extrabold text-beastly-beige">Léa Moreau</p>
-                <p className="text-[10px] font-bold text-beastly-beige/40 uppercase tracking-widest">@leamoreau_ · 18.4k</p>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </aside>
     </>

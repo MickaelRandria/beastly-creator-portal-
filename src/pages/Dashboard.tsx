@@ -3,7 +3,7 @@ import eventsData from '../data/events.json';
 import contentsData from '../data/contents.json';
 import creatorsData from '../data/creators.json';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
-import { Calendar, CheckCircle2, Upload, ChevronRight, BarChart3, ArrowUpRight, MapPin, FileText, UploadCloud, BrainCircuit, Loader2, Sparkles, Users, TrendingUp } from 'lucide-react';
+import { Calendar, CheckCircle2, Upload, ChevronRight, BarChart3, ArrowUpRight, MapPin, FileText, UploadCloud, BrainCircuit, Loader2, Sparkles, Users, TrendingUp, ExternalLink, Zap } from 'lucide-react';
 import { GlowLightning, GlowEye, GlowArrow, BeastlyEye, BeastlySmiley, BeastlyDocument } from '../components/BeastlyIcons';
 import AnimatedCounter from '../components/AnimatedCounter';
 import { Brief } from '../types';
@@ -282,6 +282,45 @@ export default function Dashboard({ onNavigate, activeBrief, setActiveBrief }: D
           </div>
         )}
       </div>
+
+      {/* Demo Links Panel */}
+      <div className="md:col-span-12 p-6 bg-beastly-dark/80 border border-beastly-green/20 rounded-3xl relative overflow-hidden">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-8 h-8 bg-beastly-green/20 rounded-full flex items-center justify-center">
+            <Zap size={15} className="text-beastly-green" />
+          </div>
+          <div>
+            <p className="text-sm font-black text-beastly-beige">Liens de démo</p>
+            <p className="text-[10px] font-extrabold uppercase tracking-wider text-beastly-beige/30">Parcours influenceur & admin</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { name: 'Léa Martin', handle: '@lea.style', token: 'lea-abc123', color: 'bg-beastly-green' },
+            { name: 'Hugo Durand', handle: '@hugo.groom', token: 'hugo-def456', color: 'bg-beastly-orange' },
+            { name: 'Sarah Benali', handle: '@sarah.b', token: 'sarah-ghi789', color: 'bg-beastly-blue' },
+            { name: 'Admin Beastly', handle: 'Dashboard OPS', token: null, color: 'bg-beastly-beige' },
+          ].map((item) => (
+            <a
+              key={item.token ?? 'admin'}
+              href={item.token ? `/event/${item.token}` : '/admin'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-between p-4 bg-beastly-beige/5 border border-beastly-beige/10 rounded-2xl hover:bg-beastly-beige/10 hover:border-beastly-beige/20 transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
+                <div>
+                  <p className="text-sm font-black text-beastly-beige leading-tight">{item.name}</p>
+                  <p className="text-[10px] font-bold text-beastly-beige/40">{item.handle}</p>
+                </div>
+              </div>
+              <ExternalLink size={13} className="text-beastly-beige/20 group-hover:text-beastly-green transition-colors shrink-0" />
+            </a>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }

@@ -7,16 +7,14 @@ interface LayoutProps {
   children: React.ReactNode;
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  role: 'ops' | 'creator';
-  setRole: (role: 'ops' | 'creator') => void;
 }
 
-export default function Layout({ children, activeTab, setActiveTab, role, setRole }: LayoutProps) {
-  const homeTab = role === 'ops' ? 'dashboard' : 'creator-dashboard';
-  const isHome = activeTab === homeTab;
+export default function Layout({ children, activeTab, setActiveTab }: LayoutProps) {
+  const isHome = activeTab === 'dashboard';
+
   return (
     <div className="min-h-screen bg-beastly-dark flex">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} role={role} setRole={setRole} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <main className="flex-1 lg:ml-72 p-5 lg:p-10">
         <div className="w-full max-w-[1400px] mx-auto">
@@ -24,7 +22,7 @@ export default function Layout({ children, activeTab, setActiveTab, role, setRol
           <div className="flex items-center justify-between mb-10">
             {!isHome ? (
               <button
-                onClick={() => setActiveTab(homeTab)}
+                onClick={() => setActiveTab('dashboard')}
                 className="flex items-center gap-2 px-5 py-2.5 bg-beastly-beige rounded-full text-sm font-bold text-beastly-dark hover:bg-beastly-beige/80 transition-colors group"
               >
                 <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
@@ -32,15 +30,15 @@ export default function Layout({ children, activeTab, setActiveTab, role, setRol
               </button>
             ) : (
               <div>
-                <p className="text-sm font-bold text-beastly-beige/40">{role === 'ops' ? 'Beastly OPS' : 'Léa Moreau'}</p>
-                <h1 className="text-3xl font-black text-beastly-beige">{role === 'ops' ? 'Dashboard' : 'Mon espace'}</h1>
+                <p className="text-sm font-bold text-beastly-beige/40">Beastly OPS</p>
+                <h1 className="text-3xl font-black text-beastly-beige">Dashboard</h1>
               </div>
             )}
 
             <div className="flex items-center gap-3">
               <div className="px-4 py-2 rounded-full bg-beastly-beige/10 border border-beastly-beige/10">
                 <span className="text-xs font-bold text-beastly-beige/60">
-                  {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                  {new Date().toLocaleDateString('fr-FR', { weekday: 'long', month: 'short', day: 'numeric' })}
                 </span>
               </div>
             </div>

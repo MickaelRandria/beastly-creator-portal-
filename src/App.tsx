@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Events from './pages/Events';
@@ -7,10 +8,21 @@ import Contents from './pages/Contents';
 import Finance from './pages/Finance';
 import AssetBox from './pages/AssetBox';
 import Trends from './pages/Trends';
-import CreatorDashboard from './pages/creator/CreatorDashboard';
-import CreatorBrief from './pages/creator/CreatorBrief';
-import CreatorUpload from './pages/creator/CreatorUpload';
-import CreatorContracts from './pages/creator/CreatorContracts';
+
+// Influencer event flow
+import EventSplash from './pages/event/EventSplash';
+import EventRSVP from './pages/event/EventRSVP';
+import EventDashboard from './pages/event/EventDashboard';
+import EventBrief from './pages/event/EventBrief';
+import EventAI from './pages/event/EventAI';
+import EventAssets from './pages/event/EventAssets';
+import EventQRCode from './pages/event/EventQRCode';
+import EventUpload from './pages/event/EventUpload';
+
+// Admin
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminScan from './pages/admin/AdminScan';
+
 import { Contract, Brief } from './types';
 
 const INITIAL_CONTRACTS: Contract[] = [
@@ -21,9 +33,9 @@ const INITIAL_CONTRACTS: Contract[] = [
   { id: 'c5', name: 'Contrat Galeries Lafayette', brand: 'Galeries Lafayette', campaignName: 'Défilé Influenceurs', value: 15000, status: 'Signed', date: 'Signé Jan 2025' },
 ];
 
-export default function App() {
+// Portail OPS — espace interne Beastly
+function OPSPortal() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [role, setRole] = useState<'ops' | 'creator'>('ops');
   const [contracts, setContracts] = useState<Contract[]>(INITIAL_CONTRACTS);
   const [activeBrief, setActiveBrief] = useState<Brief | null>(null);
 
@@ -32,34 +44,44 @@ export default function App() {
   };
 
   const renderContent = () => {
-    // Creator routes
-    if (role === 'creator') {
-      switch (activeTab) {
-        case 'creator-dashboard': return <CreatorDashboard onNavigate={setActiveTab} />;
-        case 'creator-brief': return <CreatorBrief brief={activeBrief} />;
-        case 'creator-upload': return <CreatorUpload />;
-        case 'creator-contracts': return <CreatorContracts contracts={contracts} onSign={handleSignContract} />;
-        case 'assetbox': return <AssetBox />;
-        default: return <CreatorDashboard onNavigate={setActiveTab} />;
-      }
-    }
-
-    // OPS routes
     switch (activeTab) {
       case 'dashboard': return <Dashboard onNavigate={setActiveTab} activeBrief={activeBrief} setActiveBrief={setActiveBrief} />;
-      case 'events': return <Events />;
-      case 'creators': return <Creators activeBrief={activeBrief} />;
-      case 'contents': return <Contents />;
-      case 'admin': return <Finance balance={0} contracts={contracts} onSign={handleSignContract} onWithdraw={() => false} />;
-      case 'assetbox': return <AssetBox />;
-      case 'trends': return <Trends />;
-      default: return <Dashboard onNavigate={setActiveTab} activeBrief={activeBrief} setActiveBrief={setActiveBrief} />;
+      case 'events':    return <Events />;
+      case 'creators':  return <Creators activeBrief={activeBrief} />;
+      case 'contents':  return <Contents />;
+      case 'admin':     return <Finance balance={0} contracts={contracts} onSign={handleSignContract} onWithdraw={() => false} />;
+      case 'assetbox':  return <AssetBox />;
+      case 'trends':    return <Trends />;
+      default:          return <Dashboard onNavigate={setActiveTab} activeBrief={activeBrief} setActiveBrief={setActiveBrief} />;
     }
   };
 
   return (
-    <Layout activeTab={activeTab} setActiveTab={setActiveTab} role={role} setRole={setRole}>
+    <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
       {renderContent()}
     </Layout>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      {/* Espace créateur — mobile, token-based */}
+      <Route path="/event/:token"           element={<EventSplash />} />
+      <Route path="/event/:token/rsvp"      element={<EventRSVP />} />
+      <Route path="/event/:token/dashboard" element={<EventDashboard />} />
+      <Route path="/event/:token/brief"     element={<EventBrief />} />
+      <Route path="/event/:token/ai"        element={<EventAI />} />
+      <Route path="/event/:token/assets"    element={<EventAssets />} />
+      <Route path="/event/:token/qrcode"    element={<EventQRCode />} />
+      <Route path="/event/:token/upload"    element={<EventUpload />} />
+
+      {/* Admin check-in */}
+      <Route path="/admin"      element={<AdminDashboard />} />
+      <Route path="/admin/scan" element={<AdminScan />} />
+
+      {/* Portail OPS interne Beastly */}
+      <Route path="*" element={<OPSPortal />} />
+    </Routes>
   );
 }

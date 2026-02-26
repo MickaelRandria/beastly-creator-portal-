@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc --noEmit)",
+      "Bash(find \"c:/Users/vrymi/Downloads/beastly-creator-portal \\(1\\)/src\" -type f)"
+    ]
+  }
+}
