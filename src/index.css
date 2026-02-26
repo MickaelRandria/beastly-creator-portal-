@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-beastly-dark: #000000;
+  --color-beastly-beige: #f1d8c4;
+  --color-beastly-green: #b4ff00;
+  --color-beastly-orange: #fc846d;
+  --color-beastly-blue: #b1def3;
+
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "DM Serif Display", serif;
+}
+
+@layer base {
+  body {
+    @apply bg-beastly-dark text-beastly-beige font-sans antialiased selection:bg-beastly-green selection:text-black font-semibold;
+  }
+}
