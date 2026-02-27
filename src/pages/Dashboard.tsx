@@ -28,14 +28,14 @@ export default function Dashboard({ onNavigate, activeBrief, setActiveBrief }: D
       setTimeout(() => {
         setAgentState('complete');
         setActiveBrief({
-          brand: 'Jacquemus',
-          campaignName: 'Soirée Lancement AW25',
-          targetReach: 350000,
-          targetEMV: 5000,
-          budget: 15000,
-          niche: 'Mode / Luxe',
-          dates: '15 Mars - 20 Mars 2025',
-          deliverables: ['1× Reel Instagram (30-60s)', '3× Stories Instagram', 'Hashtags: #Jacquemus #AW25 #Beastly']
+          brand: 'FuzeTea',
+          campaignName: 'Solidays x FuzeTea Passion',
+          targetReach: 420000,
+          targetEMV: 8000,
+          budget: 22000,
+          niche: 'Festival / Lifestyle',
+          dates: '26 Juin - 28 Juin 2026',
+          deliverables: ['1× Vidéo in-feed (TikTok ou Reels)', '3-5× Stories sur place', '#FuzeTeaPassion @FuzeTea']
         });
         setTimeout(() => setAgentState('idle'), 2000); // Reset for visual after completion
       }, 3000);
@@ -91,7 +91,7 @@ export default function Dashboard({ onNavigate, activeBrief, setActiveBrief }: D
         <GlowLightning className="absolute -right-4 -bottom-4 opacity-15 group-hover:opacity-25 transition-opacity duration-700 pointer-events-none" size={100} color="#b4ff00" />
       </div>
 
-      {/* Agent 0: Master Brief Upload */}
+{/* Agent 0: Master Brief Upload */}
       {!activeBrief && (
         <div className="md:col-span-12 p-8 bg-beastly-dark/80 backdrop-blur-xl border border-beastly-green/20 rounded-3xl relative overflow-hidden group">
           <GlowLightning className="absolute -left-10 -top-10 opacity-20 pointer-events-none" size={200} color="#b4ff00" />
@@ -105,14 +105,14 @@ export default function Dashboard({ onNavigate, activeBrief, setActiveBrief }: D
                 <UploadCloud size={32} className="text-beastly-green" />
               </div>
               <h3 className="text-xl font-black text-beastly-beige">Glissez-déposez le Brief Marque (PDF)</h3>
-              <p className="text-sm font-bold text-beastly-beige/40 mt-2 text-center max-w-lg leading-relaxed">L'Agent 0 (Gemini 1.5 Pro) analysera le document pour créer la campagne, fixer les objectifs de performance et préparer le sourcing IA.</p>
+              <p className="text-sm font-bold text-beastly-beige/40 mt-2 text-center max-w-lg leading-relaxed">Notre IA analyse ton brief pour extraire les objectifs, le budget et les livrables de la campagne — en quelques secondes.</p>
             </div>
           )}
 
           {agentState === 'uploading' && (
             <div className="flex flex-col items-center justify-center py-12 space-y-4 relative z-10">
               <UploadCloud size={48} className="text-beastly-beige/30 animate-bounce" />
-              <p className="text-sm font-extrabold uppercase tracking-widest text-beastly-beige/60">Upload du document en cours...</p>
+              <p className="text-sm font-extrabold uppercase tracking-widest text-beastly-beige/60">Chargement du document...</p>
             </div>
           )}
 
@@ -120,12 +120,12 @@ export default function Dashboard({ onNavigate, activeBrief, setActiveBrief }: D
             <div className="flex flex-col items-center justify-center py-10 space-y-6 max-w-lg mx-auto relative z-10">
               <div className="flex items-center gap-4 text-beastly-green">
                 <BrainCircuit size={36} className="animate-pulse" />
-                <h3 className="text-xl font-black uppercase tracking-wider">Agent 0 : Extraction Gemini 1.5 Pro</h3>
+                <h3 className="text-xl font-black uppercase tracking-wider">Lecture du brief en cours</h3>
               </div>
               <div className="w-full space-y-3">
                 <div className="flex justify-between text-[10px] font-extrabold uppercase tracking-wider text-beastly-beige/40">
-                  <span>Analyse sémantique du PDF...</span>
-                  <span className="text-beastly-green animate-pulse">Extraction des KPIs...</span>
+                  <span>Identification des objectifs...</span>
+                  <span className="text-beastly-green animate-pulse">Extraction des données clés...</span>
                 </div>
                 <div className="w-full h-2 bg-beastly-dark/80 rounded-full overflow-hidden border border-white/5">
                   <div className="h-full bg-gradient-to-r from-beastly-green/50 to-beastly-green w-2/3 rounded-full animate-pulse relative">
@@ -141,8 +141,8 @@ export default function Dashboard({ onNavigate, activeBrief, setActiveBrief }: D
               <div className="w-20 h-20 bg-beastly-green/20 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(202,240,65,0.2)]">
                 <CheckCircle2 size={40} className="text-beastly-green" />
               </div>
-              <h3 className="text-2xl font-black text-beastly-green">Brief extrait !</h3>
-              <p className="text-sm font-bold text-beastly-beige/60">Le master brief a été digitalisé avec succès.</p>
+              <h3 className="text-2xl font-black text-beastly-green">Brief analysé !</h3>
+              <p className="text-sm font-bold text-beastly-beige/60">Toutes les infos clés ont été capturées. Le casting peut démarrer.</p>
             </div>
           )}
         </div>
@@ -179,7 +179,7 @@ export default function Dashboard({ onNavigate, activeBrief, setActiveBrief }: D
             </div>
             <div className="flex flex-col justify-center h-full">
               <button onClick={() => onNavigate('creators')} className="w-full h-full py-3 bg-beastly-green text-beastly-dark hover:brightness-110 rounded-2xl text-xs font-extrabold uppercase tracking-wider transition-all flex justify-center items-center gap-2 group shadow-[0_0_20px_rgba(202,240,65,0.2)]">
-                Sourcer l'IA <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                Lancer le Casting <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
             </div>
           </div>
@@ -296,9 +296,9 @@ export default function Dashboard({ onNavigate, activeBrief, setActiveBrief }: D
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            { name: 'Léa Martin', handle: '@lea.style', token: 'lea-abc123', color: 'bg-beastly-green' },
-            { name: 'Hugo Durand', handle: '@hugo.groom', token: 'hugo-def456', color: 'bg-beastly-orange' },
-            { name: 'Sarah Benali', handle: '@sarah.b', token: 'sarah-ghi789', color: 'bg-beastly-blue' },
+            { name: 'Léa Martin', handle: '@lea.festival', token: 'lea-abc123', color: 'bg-beastly-green' },
+            { name: 'Hugo Durand', handle: '@hugo.taste', token: 'hugo-def456', color: 'bg-beastly-orange' },
+            { name: 'Sarah Benali', handle: '@sarah.vibes', token: 'sarah-ghi789', color: 'bg-beastly-blue' },
             { name: 'Admin Beastly', handle: 'Dashboard OPS', token: null, color: 'bg-beastly-beige' },
           ].map((item) => (
             <a

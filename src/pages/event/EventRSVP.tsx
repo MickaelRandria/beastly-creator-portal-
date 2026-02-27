@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, MapPin, Shirt, Clock, Check, ArrowRight, Zap } from 'lucide-react';
+import { Calendar, MapPin, Shirt, Clock, Check, ArrowRight, Zap, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { getInfluencerByToken, mockEvent } from '../../lib/mockData';
 import { GlowLightning } from '../../components/BeastlyIcons';
 
-type Step = 'invite' | 'sign' | 'confirmed';
+type Step = 'invite' | 'sign' | 'confirmed' | 'declined';
 
 export default function EventRSVP() {
   const { token } = useParams<{ token: string }>();
@@ -36,7 +36,7 @@ export default function EventRSVP() {
   const qrValue = `BEASTLY-${mockEvent.id}-${influencer.id}`;
 
   return (
-    <div className="min-h-screen bg-beastly-dark flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-beastly-dark flex flex-col items-center py-8 px-6 relative overflow-x-hidden">
       <GlowLightning className="absolute -top-10 -left-10 opacity-15 pointer-events-none" size={280} color="#b4ff00" />
       <GlowLightning className="absolute -bottom-20 -right-10 opacity-10 pointer-events-none rotate-180" size={280} color="#fc846d" />
 
@@ -51,7 +51,7 @@ export default function EventRSVP() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4 }}
-              className="space-y-5"
+              className="space-y-4"
             >
               {/* Logo */}
               <div className="flex items-center gap-2 justify-center mb-2">
@@ -63,7 +63,7 @@ export default function EventRSVP() {
 
               {/* Invitation card */}
               <div className="bg-beastly-beige rounded-3xl overflow-hidden">
-                {/* Header card */}
+                {/* Dark header */}
                 <div className="bg-beastly-dark p-6 relative overflow-hidden">
                   <GlowLightning className="absolute -right-4 -top-4 opacity-20 pointer-events-none" size={120} color="#b4ff00" />
                   <p className="text-[10px] font-extrabold uppercase tracking-widest text-beastly-green mb-1 relative z-10">Invitation exclusive</p>
@@ -71,8 +71,8 @@ export default function EventRSVP() {
                   <p className="text-sm font-bold text-beastly-beige/50 mt-1 relative z-10">{mockEvent.brand}</p>
                 </div>
 
-                {/* Details */}
-                <div className="p-6 space-y-4">
+                <div className="p-6 space-y-5">
+                  {/* Date / Time / Location / Dress code */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 bg-beastly-dark/5 rounded-xl">
                       <Calendar size={13} className="text-beastly-dark/40 mb-1" />
@@ -96,8 +96,34 @@ export default function EventRSVP() {
                     </div>
                   </div>
 
-                  <p className="text-xs font-bold text-beastly-dark/60 leading-relaxed">{mockEvent.description}</p>
+                  {/* La mission */}
+                  <div className="p-4 bg-beastly-dark/5 rounded-2xl space-y-1.5">
+                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-beastly-dark/40">La mission</p>
+                    <p className="text-xs font-bold text-beastly-dark/70 leading-relaxed">{mockEvent.description}</p>
+                  </div>
 
+                  {/* Ce qu'on attend de toi */}
+                  <div className="space-y-2.5">
+                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-beastly-dark/40">Ce qu'on attend de toi</p>
+                    {mockEvent.deliverables.map((d, i) => (
+                      <div key={i} className="flex items-center gap-2.5">
+                        <div className="w-5 h-5 bg-beastly-dark rounded-full flex items-center justify-center shrink-0">
+                          <Check size={10} className="text-beastly-green" strokeWidth={3} />
+                        </div>
+                        <p className="text-xs font-bold text-beastly-dark/70">{d}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Tes avantages */}
+                  <div className="p-4 bg-beastly-dark rounded-2xl space-y-2">
+                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-beastly-beige/40">Tes avantages</p>
+                    {mockEvent.perks.map((perk, i) => (
+                      <p key={i} className="text-sm font-bold text-beastly-beige/80">{perk}</p>
+                    ))}
+                  </div>
+
+                  {/* Accept CTA */}
                   <button
                     onClick={() => setStep('sign')}
                     className="w-full py-4 bg-beastly-dark text-beastly-green rounded-full font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-beastly-dark/80 transition-all group"
@@ -107,6 +133,14 @@ export default function EventRSVP() {
                   </button>
                 </div>
               </div>
+
+              {/* Decline — less prominent, outside the card */}
+              <button
+                onClick={() => setStep('declined')}
+                className="w-full text-center py-3 text-sm font-bold text-beastly-beige/30 hover:text-beastly-beige/60 transition-colors"
+              >
+                Je ne suis pas disponible
+              </button>
             </motion.div>
           )}
 
@@ -126,11 +160,10 @@ export default function EventRSVP() {
               </div>
 
               <div className="bg-beastly-beige rounded-3xl p-6 space-y-5">
-                {/* Contract summary */}
                 <div className="p-4 bg-beastly-dark/5 rounded-2xl space-y-2.5">
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-beastly-dark/40">Ce à quoi tu t'engages</p>
                   {[
-                    'Publier au moins 1 contenu dans les 24h suivant l\'event',
+                    "Publier au moins 1 contenu dans les 24h suivant l'event",
                     'Utiliser les hashtags officiels de la campagne',
                     'Autoriser Beastly à réutiliser tes contenus à des fins promotionnelles',
                   ].map((item, i) => (
@@ -143,7 +176,6 @@ export default function EventRSVP() {
                   ))}
                 </div>
 
-                {/* Signature checkbox */}
                 <button
                   onClick={() => setSigned(!signed)}
                   className="w-full flex items-center gap-3 p-4 bg-beastly-dark/5 rounded-2xl border-2 border-transparent hover:border-beastly-dark/20 transition-all text-left"
@@ -196,7 +228,6 @@ export default function EventRSVP() {
                 <p className="text-sm font-bold text-beastly-beige/40">Voici ton pass d'entrée, {influencer.firstName}.</p>
               </div>
 
-              {/* QR Code as reward */}
               <div className="bg-white rounded-3xl p-6 flex flex-col items-center gap-4">
                 <QRCodeSVG
                   value={qrValue}
@@ -221,6 +252,36 @@ export default function EventRSVP() {
               >
                 Accéder à mon espace
                 <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </motion.div>
+          )}
+
+          {/* ── ÉTAPE 4 : Décliné ── */}
+          {step === 'declined' && (
+            <motion.div
+              key="declined"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-5 text-center"
+            >
+              <div className="w-16 h-16 bg-beastly-beige/10 border border-beastly-beige/10 rounded-full flex items-center justify-center mx-auto">
+                <X size={28} className="text-beastly-beige/40" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-2xl font-black text-beastly-beige">Invitation déclinée</h2>
+                <p className="text-sm font-bold text-beastly-beige/40 leading-relaxed">
+                  Dommage ! Si tu changes d'avis ou<br />pour toute question, contacte-nous.
+                </p>
+              </div>
+              <div className="p-4 bg-beastly-beige/10 border border-beastly-beige/10 rounded-2xl">
+                <p className="text-xs font-extrabold text-beastly-beige/40 uppercase tracking-wider">contact@beastly-agency.com</p>
+              </div>
+              <button
+                onClick={() => setStep('invite')}
+                className="w-full py-3 border border-beastly-beige/20 rounded-full text-sm font-bold text-beastly-beige/50 hover:text-beastly-beige/80 hover:border-beastly-beige/40 transition-all"
+              >
+                Revenir à l'invitation
               </button>
             </motion.div>
           )}

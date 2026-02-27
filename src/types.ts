@@ -48,3 +48,14 @@ export interface Brief {
   dates: string;
   deliverables: string[];
 }
+
+export interface SelectedInfluencer {
+  id: string;
+  name: string;
+  handle: string;
+  followers: number;
+  engagement: number;
+  platform: string;
+  niche: string;
+  avatar: string;
+}

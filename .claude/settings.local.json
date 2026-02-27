@@ -2,7 +2,19 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc --noEmit)",
-      "Bash(find \"c:/Users/vrymi/Downloads/beastly-creator-portal \\(1\\)/src\" -type f)"
+      "Bash(find \"c:/Users/vrymi/Downloads/beastly-creator-portal \\(1\\)/src\" -type f)",
+      "Bash(ls \"c:/Users/vrymi/Downloads/beastly-creator-portal \\(1\\)/vercel.json\")",
+      "Bash(find \"/c/Users/vrymi/Downloads/beastly-creator-portal \\(1\\)\" -name \"*.tsx\" -o -name \"*.ts\")",
+      "Bash(find \"/c/Users/vrymi/Downloads/beastly-creator-portal \\(1\\)/src\" -name \"*.tsx\" -o -name \"*.ts\")",
+      "Bash(grep -n \"GEMINI\\\\|gemini\\\\|apify\\\\|Apify\" \"/c/Users/vrymi/Downloads/beastly-creator-portal \\(1\\)/src\"/**/*.tsx)",
+      "Bash(find \"/c/Users/vrymi/Downloads/beastly-creator-portal \\(1\\)\" -name \".env*\" -type f)",
+      "Bash(find \"/c/Users/vrymi/Downloads/beastly-creator-portal \\(1\\)\" -name \"vite.config*\" -o -name \"main.tsx\")",
+      "Bash(python3 -c \":*)",
+      "Bash(python -c \":*)",
+      "Bash(pip install openpyxl -q)",
+      "Bash(npm install react-force-graph)",
+      "Bash(npm uninstall react-force-graph)",
+      "Bash(npm install force-graph)"
     ]
   }
 }

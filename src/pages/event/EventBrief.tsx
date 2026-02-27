@@ -145,7 +145,7 @@ export default function EventBrief() {
           <ul className="space-y-2">
             {mockEvent.brief.dos.map((d, i) => (
               <li key={i} className="flex items-start gap-2.5 text-sm font-bold text-beastly-dark/70">
-                <span className="text-beastly-green mt-0.5 shrink-0">✓</span>
+                <span className="text-beastly-dark mt-0.5 shrink-0">✓</span>
                 {d}
               </li>
             ))}

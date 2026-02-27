@@ -23,42 +23,53 @@ import EventUpload from './pages/event/EventUpload';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminScan from './pages/admin/AdminScan';
 
-import { Contract, Brief } from './types';
-
-const INITIAL_CONTRACTS: Contract[] = [
-  { id: 'c1', name: 'Accord-cadre Beastly', brand: 'Beastly Agency', campaignName: 'Conditions générales OPS', value: 0, status: 'Signed', date: 'Expire Déc 2025' },
-  { id: 'c2', name: 'Contrat Event Jacquemus AW25', brand: 'Jacquemus', campaignName: 'Soirée Lancement AW25', value: 8500, status: 'Signed', date: 'Signé Fév 2025' },
-  { id: 'c3', name: 'Contrat Pop-up Nike', brand: 'Nike', campaignName: 'Pop-up Store Experience', value: 12000, status: 'Pending', date: 'Envoyé Fév 2025' },
-  { id: 'c4', name: 'Contrat Brunch Sézane', brand: 'Sézane', campaignName: 'Brunch Créateurs Printemps', value: 5500, status: 'Pending', date: 'En attente signature' },
-  { id: 'c5', name: 'Contrat Galeries Lafayette', brand: 'Galeries Lafayette', campaignName: 'Défilé Influenceurs', value: 15000, status: 'Signed', date: 'Signé Jan 2025' },
-];
+import { Brief, SelectedInfluencer } from './types';
+import ProcessStepper from './components/ProcessStepper';
 
 // Portail OPS — espace interne Beastly
 function OPSPortal() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [contracts, setContracts] = useState<Contract[]>(INITIAL_CONTRACTS);
   const [activeBrief, setActiveBrief] = useState<Brief | null>(null);
+  const [selectedInfluencers, setSelectedInfluencers] = useState<SelectedInfluencer[]>([]);
+  const [invitationSent, setInvitationSent] = useState(false);
+  const [assetsSent, setAssetsSent] = useState(false);
+  const [contractSent, setContractSent] = useState(false);
 
-  const handleSignContract = (id: string) => {
-    setContracts(prev => prev.map(c => c.id === id ? { ...c, status: 'Signed' } : c));
+  // Stepper: computed from state
+  const campaignStep = !activeBrief ? 0
+    : contractSent ? 5
+    : assetsSent ? 4
+    : invitationSent ? 3
+    : selectedInfluencers.length > 0 ? 2
+    : 1;
+
+  const handleSetActiveBrief = (brief: Brief | null) => {
+    setActiveBrief(brief);
+    if (!brief) { setInvitationSent(false); setSelectedInfluencers([]); setAssetsSent(false); setContractSent(false); }
+  };
+
+  const handleInviteSelection = (selected: SelectedInfluencer[]) => {
+    setSelectedInfluencers(selected);
+    setInvitationSent(true);
   };
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard': return <Dashboard onNavigate={setActiveTab} activeBrief={activeBrief} setActiveBrief={setActiveBrief} />;
+      case 'dashboard': return <Dashboard onNavigate={setActiveTab} activeBrief={activeBrief} setActiveBrief={handleSetActiveBrief} />;
       case 'events':    return <Events />;
-      case 'creators':  return <Creators activeBrief={activeBrief} />;
+      case 'creators':  return <Creators activeBrief={activeBrief} onSelectionChange={handleInviteSelection} />;
       case 'contents':  return <Contents />;
-      case 'admin':     return <Finance balance={0} contracts={contracts} onSign={handleSignContract} onWithdraw={() => false} />;
-      case 'assetbox':  return <AssetBox />;
+      case 'admin':     return <Finance selectedInfluencers={selectedInfluencers} onContractSent={() => setContractSent(true)} />;
+      case 'assetbox':  return <AssetBox invitedInfluencers={selectedInfluencers} onAssetsSent={() => setAssetsSent(true)} />;
       case 'trends':    return <Trends />;
-      default:          return <Dashboard onNavigate={setActiveTab} activeBrief={activeBrief} setActiveBrief={setActiveBrief} />;
+      default:          return <Dashboard onNavigate={setActiveTab} activeBrief={activeBrief} setActiveBrief={handleSetActiveBrief} campaignStep={campaignStep} />;
     }
   };
 
   return (
     <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
       {renderContent()}
+      <ProcessStepper currentStep={campaignStep} onNavigate={setActiveTab} />
     </Layout>
   );
 }
