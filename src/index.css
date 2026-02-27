@@ -13,12 +13,6 @@
 }
 
 @layer base {
-  html {
-    /* Empêche le rebond élastique au niveau document (pull-to-refresh),
-       sans bloquer le scroll normal des pages */
-    overscroll-behavior: none;
-  }
-
   body {
     @apply bg-beastly-dark text-beastly-beige font-sans antialiased selection:bg-beastly-green selection:text-black font-semibold;
 
@@ -26,16 +20,17 @@
        disparaît/réapparaît sur iOS/Android */
     min-height: 100dvh;
 
-    /* Scroll momentum fluide sur iOS */
+    /* Scroll momentum fluide sur iOS — le seul flag nécessaire */
     -webkit-overflow-scrolling: touch;
 
-    /* NE PAS mettre overscroll-behavior sur body : cause le bug "scroll bloqué
-       en haut de page" sur iOS (les gestes momentum restent accrochés) */
+    /* NE PAS mettre overscroll-behavior ici ni sur html :
+       sur iOS, ça consomme le 1er geste de scroll comme un "anti-pull-to-refresh"
+       → l'utilisateur doit scroller 2 fois pour que ça marche.
+       En PWA standalone, iOS désactive déjà le pull-to-refresh nativement. */
   }
 
   #root {
     min-height: 100dvh;
-    /* Pas de display:flex ici — ça casse la détection du conteneur de scroll iOS */
   }
 
   /* ─── Scrollbar discrète sur desktop ─────────────────────── */
