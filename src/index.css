@@ -13,64 +13,34 @@
 }
 
 @layer base {
-  /* ─── Base mobile-first & PWA ─────────────────────────────── */
   html {
-    /* Hauteur dynamique : prend en compte la barre d'adresse iOS/Android */
-    height: 100%;
-    /* Évite le rebond élastique global en mode PWA standalone */
+    /* Empêche le rebond élastique au niveau document (pull-to-refresh),
+       sans bloquer le scroll normal des pages */
     overscroll-behavior: none;
   }
 
   body {
     @apply bg-beastly-dark text-beastly-beige font-sans antialiased selection:bg-beastly-green selection:text-black font-semibold;
 
-    min-height: 100%;
-    /* dvh = dynamic viewport height — se recalcule quand la barre d'adresse apparaît/disparaît */
+    /* dvh = dynamic viewport height : s'adapte quand la barre d'adresse
+       disparaît/réapparaît sur iOS/Android */
     min-height: 100dvh;
 
-    /* Scroll momentum iOS (touch "fluide") */
+    /* Scroll momentum fluide sur iOS */
     -webkit-overflow-scrolling: touch;
 
-    /* Évite le pull-to-refresh natif qui interfère avec le scroll des pages influenceur */
-    overscroll-behavior-y: none;
+    /* NE PAS mettre overscroll-behavior sur body : cause le bug "scroll bloqué
+       en haut de page" sur iOS (les gestes momentum restent accrochés) */
   }
 
   #root {
     min-height: 100dvh;
-    /* Safe area pour les téléphones avec encoche/Dynamic Island */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-    display: flex;
-    flex-direction: column;
+    /* Pas de display:flex ici — ça casse la détection du conteneur de scroll iOS */
   }
 
-  /* ─── Fix scroll sur les pages influenceur ────────────────── */
-
-  /* Toute page influenceur (/event/*) doit pouvoir scroller librement */
-  /* On évite que overflow:hidden d'un parent bloque le scroll enfant */
-  .scroll-page {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-  }
-
-  /* En mode PWA standalone : pas de barre de statut, on pousse le contenu */
-  @media (display-mode: standalone) {
-    body {
-      /* Déjà géré par env(safe-area-inset-top) sur #root */
-    }
-  }
-
-  /* ─── Scrollbar discrète sur les pages OPS desktop ────────── */
-  ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
+  /* ─── Scrollbar discrète sur desktop ─────────────────────── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
     background: rgba(241, 216, 196, 0.15);
     border-radius: 9999px;
