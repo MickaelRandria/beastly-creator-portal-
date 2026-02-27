@@ -114,7 +114,7 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
         setTimeout(() => {
             setAgentState('scoring_gemini');
             setTimeout(() => {
-                const enriched = [...creators].slice(0, 15).map(c => ({
+                const enriched = [...creators].slice(0, 26).map(c => ({
                     ...c,
                     aiScore: Math.floor(Math.random() * 15) + 85,
                     aiReason: c.platform === 'TikTok'
@@ -237,7 +237,7 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                                 <div className="p-2.5 bg-beastly-green/20 text-beastly-green rounded-xl">
                                     <Sparkles size={24} />
                                 </div>
-                                <h2 className="text-2xl font-black text-beastly-beige">Agent de Sourcing IA</h2>
+                                <h2 className="text-2xl font-black text-beastly-beige">Agent IA · Sourcing</h2>
                             </div>
                             <p className="text-sm font-bold text-beastly-beige/60 max-w-md leading-relaxed">
                                 Notre moteur intelligent parcourt des milliers de profils pour identifier les créateurs les plus en phase avec ta campagne — et te propose un casting clé en main.
@@ -551,6 +551,16 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                                         <p className="text-[8px] font-extrabold text-beastly-beige/40 uppercase tracking-wider">EMV Estimé</p>
                                     </div>
                                 </div>
+
+                                {/* AI context phrase — shown after sourcing scan */}
+                                {agentState === 'complete' && creator.aiReason && (
+                                    <div className="px-3 py-2.5 bg-beastly-dark border border-beastly-blue/20 rounded-xl flex items-start gap-2">
+                                        <Sparkles size={11} className="text-beastly-blue shrink-0 mt-0.5" />
+                                        <p className="text-[10px] font-bold text-beastly-beige/60 italic leading-relaxed">
+                                            "{creator.aiReason}"
+                                        </p>
+                                    </div>
+                                )}
 
                                 {/* Manual invite button (idle state only) */}
                                 {agentState === 'idle' && (

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, MapPin, Shirt, Clock, Check, ArrowRight, Zap, X } from 'lucide-react';
+import { Calendar, MapPin, Shirt, Clock, Check, ArrowRight, Zap, X, FileText, ExternalLink } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { getInfluencerByToken, mockEvent } from '../../lib/mockData';
 import { GlowLightning } from '../../components/BeastlyIcons';
@@ -166,6 +166,7 @@ export default function EventRSVP() {
                     "Publier au moins 1 contenu dans les 24h suivant l'event",
                     'Utiliser les hashtags officiels de la campagne',
                     'Autoriser Beastly à réutiliser tes contenus à des fins promotionnelles',
+                    "J'autorise Beastly à utiliser, traiter et conserver mes données personnelles dans le cadre de cette opération événementielle et pour les prochaines à venir",
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-2.5">
                       <div className="w-4 h-4 bg-beastly-green rounded-full flex items-center justify-center shrink-0 mt-0.5">
@@ -175,6 +176,23 @@ export default function EventRSVP() {
                     </div>
                   ))}
                 </div>
+
+                {/* YouSign CTA */}
+                <a
+                  href="https://yousign.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center gap-3 p-4 bg-beastly-dark rounded-2xl hover:bg-beastly-dark/80 transition-all group"
+                >
+                  <div className="w-9 h-9 bg-[#1a1a2e] border border-white/10 rounded-xl flex items-center justify-center shrink-0">
+                    <FileText size={16} className="text-[#6c63ff]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-black text-beastly-beige leading-tight">Voir & signer le contrat</p>
+                    <p className="text-[10px] font-bold text-beastly-beige/40 mt-0.5">Via YouSign · Signature électronique certifiée</p>
+                  </div>
+                  <ExternalLink size={14} className="text-beastly-beige/30 group-hover:text-beastly-beige/60 shrink-0 transition-colors" />
+                </a>
 
                 <button
                   onClick={() => setSigned(!signed)}
