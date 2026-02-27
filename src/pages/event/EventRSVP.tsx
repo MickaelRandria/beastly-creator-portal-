@@ -36,7 +36,7 @@ export default function EventRSVP() {
   const qrValue = `BEASTLY-${mockEvent.id}-${influencer.id}`;
 
   return (
-    <div className="min-h-screen bg-beastly-dark flex flex-col items-center py-8 px-6 relative overflow-x-hidden">
+    <div className="min-h-screen bg-beastly-dark flex flex-col items-center py-8 px-6 relative overflow-x-clip">
       <GlowLightning className="absolute -top-10 -left-10 opacity-15 pointer-events-none" size={280} color="#b4ff00" />
       <GlowLightning className="absolute -bottom-20 -right-10 opacity-10 pointer-events-none rotate-180" size={280} color="#fc846d" />
 

@@ -37,7 +37,7 @@ export default function EventSplash() {
   }
 
   return (
-    <div className="min-h-screen bg-beastly-dark flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-beastly-dark flex flex-col items-center justify-center p-6 relative overflow-clip">
       {/* Decorative glows */}
       <GlowLightning className="absolute -top-10 -left-10 opacity-20 pointer-events-none" size={300} color="#b4ff00" />
       <GlowLightning className="absolute -bottom-20 -right-10 opacity-10 pointer-events-none rotate-180" size={300} color="#fc846d" />
