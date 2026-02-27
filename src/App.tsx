@@ -10,6 +10,7 @@ import AssetBox from './pages/AssetBox';
 import Trends from './pages/Trends';
 
 // Influencer event flow
+import EventLogin from './pages/event/EventLogin';
 import EventSplash from './pages/event/EventSplash';
 import EventRSVP from './pages/event/EventRSVP';
 import EventDashboard from './pages/event/EventDashboard';
@@ -62,7 +63,7 @@ function OPSPortal() {
       case 'admin':     return <Finance selectedInfluencers={selectedInfluencers} onContractSent={() => setContractSent(true)} />;
       case 'assetbox':  return <AssetBox invitedInfluencers={selectedInfluencers} onAssetsSent={() => setAssetsSent(true)} />;
       case 'trends':    return <Trends />;
-      default:          return <Dashboard onNavigate={setActiveTab} activeBrief={activeBrief} setActiveBrief={handleSetActiveBrief} campaignStep={campaignStep} />;
+      default:          return <Dashboard onNavigate={setActiveTab} activeBrief={activeBrief} setActiveBrief={handleSetActiveBrief} />;
     }
   };
 
@@ -77,6 +78,9 @@ function OPSPortal() {
 export default function App() {
   return (
     <Routes>
+      {/* Login SSO créateur */}
+      <Route path="/creator/login"          element={<EventLogin />} />
+
       {/* Espace créateur — mobile, token-based */}
       <Route path="/event/:token"           element={<EventSplash />} />
       <Route path="/event/:token/rsvp"      element={<EventRSVP />} />

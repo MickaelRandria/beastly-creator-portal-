@@ -1,13 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+
+    <!-- Viewport : user-scalable=no pour éviter le zoom accidentel en PWA -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+
+    <title>Beastly Creator Portal</title>
+
+    <!-- PWA — Thème et couleur de fond -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="background-color" content="#000000" />
+
+    <!-- PWA — iOS (Safari ne lit pas le manifest pour l'install) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Beastly" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+
+    <!-- PWA — Android / Chrome -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+
+    <!-- Description pour partage -->
+    <meta name="description" content="Portail créateur Beastly — campagnes événementielles" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Zap, Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { getInfluencerByToken, mockEvent } from '../../lib/mockData';
@@ -25,6 +25,12 @@ export default function EventSplash() {
           </div>
           <h1 className="text-2xl font-black text-beastly-beige">Lien invalide</h1>
           <p className="text-sm font-bold text-beastly-beige/40">Ce lien d'invitation n'existe pas ou a expiré.</p>
+          <Link
+            to="/creator/login"
+            className="inline-block mt-2 text-sm font-extrabold text-beastly-green hover:underline"
+          >
+            Se connecter avec Google →
+          </Link>
         </div>
       </div>
     );
