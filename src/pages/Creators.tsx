@@ -555,31 +555,40 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
             {/* ── Network Graph interactif — avant la liste ── */}
             {agentState === 'complete' && (
                 <div className="bg-beastly-dark/80 border border-beastly-beige/10 rounded-3xl overflow-hidden">
-                    <div className="px-6 pt-6 pb-3 flex items-center justify-between gap-3">
+                    {/* Header */}
+                    <div className="px-6 pt-6 pb-4 flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-beastly-orange/20 rounded-xl">
+                            <div className="p-2.5 bg-beastly-orange/20 rounded-xl shrink-0">
                                 <Target size={20} className="text-beastly-orange" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-black text-beastly-beige">Carte des communautés</h3>
                                 <p className="text-[11px] font-bold text-beastly-beige/40 mt-0.5">
                                     {graphMode === 'clusters'
-                                        ? 'Clique sur un cluster pour filtrer les créateurs ci-dessous'
-                                        : 'Vue d\'ensemble — tous les créateurs par niche'}
+                                        ? 'Clique sur un cluster pour filtrer les créateurs'
+                                        : 'Tous les créateurs — colorés par niche'}
                                 </p>
                             </div>
                         </div>
-                        {/* Toggle vue */}
-                        <div className="flex items-center gap-1 p-1 bg-beastly-beige/5 border border-beastly-beige/10 rounded-full shrink-0">
+                        {/* Toggle vue — pill vert bien visible */}
+                        <div className="flex items-center shrink-0 rounded-full bg-beastly-beige/10 p-1 gap-1">
                             <button
                                 onClick={() => { setGraphMode('cloud'); setSelectedNiche(null); }}
-                                className={`px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all ${graphMode === 'cloud' ? 'bg-beastly-beige text-beastly-dark' : 'text-beastly-beige/50 hover:text-beastly-beige/80'}`}
+                                className={`px-4 py-2 rounded-full text-[11px] font-extrabold uppercase tracking-wider transition-all whitespace-nowrap ${
+                                    graphMode === 'cloud'
+                                        ? 'bg-beastly-green text-beastly-dark shadow-sm'
+                                        : 'text-beastly-beige/60 hover:text-beastly-beige'
+                                }`}
                             >
                                 Nuage
                             </button>
                             <button
                                 onClick={() => setGraphMode('clusters')}
-                                className={`px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all ${graphMode === 'clusters' ? 'bg-beastly-beige text-beastly-dark' : 'text-beastly-beige/50 hover:text-beastly-beige/80'}`}
+                                className={`px-4 py-2 rounded-full text-[11px] font-extrabold uppercase tracking-wider transition-all whitespace-nowrap ${
+                                    graphMode === 'clusters'
+                                        ? 'bg-beastly-green text-beastly-dark shadow-sm'
+                                        : 'text-beastly-beige/60 hover:text-beastly-beige'
+                                }`}
                             >
                                 Clusters
                             </button>
