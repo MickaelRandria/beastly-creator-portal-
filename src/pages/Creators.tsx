@@ -427,6 +427,47 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                 </div>
             )}
 
+            {/* ── Network Graph — avant la liste des créateurs ── */}
+            {agentState === 'complete' && (
+                <div className="bg-beastly-dark/80 border border-beastly-beige/10 rounded-3xl overflow-hidden">
+                    <div className="px-6 pt-6 pb-2 flex items-center gap-3">
+                        <div className="p-2.5 bg-beastly-orange/20 rounded-xl">
+                            <Target size={20} className="text-beastly-orange" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-black text-beastly-beige">Répartition des communautés</h3>
+                            <p className="text-[11px] font-bold text-beastly-beige/40 mt-0.5">
+                                Clique sur un segment pour filtrer les créateurs ci-dessous
+                            </p>
+                        </div>
+                    </div>
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-beastly-beige/50 px-6 pb-3">
+                        {POPULATION_SEGMENTS.reduce((a, s) => a + s.count, 0)} profils · {POPULATION_SEGMENTS.length} segments identifiés
+                    </p>
+                    <iframe
+                        src="https://flo.uri.sh/visualisation/27810435/embed"
+                        title="Répartition des communautés"
+                        className="w-full border-0"
+                        style={{ height: 500 }}
+                        sandbox="allow-same-origin allow-forms allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
+                    />
+                    <div className="flex flex-wrap gap-3 px-6 pb-5">
+                        {POPULATION_SEGMENTS.map(seg => (
+                            <button
+                                key={seg.id}
+                                onClick={() => setSelectedPopulation(prev => prev === seg.id ? null : seg.id)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all ${selectedPopulation === seg.id ? 'ring-1 ring-white/20' : 'opacity-60 hover:opacity-90'}`}
+                                style={{ backgroundColor: seg.color + (selectedPopulation === seg.id ? 'ff' : '33'), color: '#000' }}
+                            >
+                                <span>{seg.icon}</span>
+                                <span style={{ color: selectedPopulation === seg.id ? '#000' : seg.color }}>{seg.label}</span>
+                                <span className="ml-1 opacity-60">{seg.count}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Search + Filters (Only if idle) */}
             {agentState === 'idle' && (
                 <div className="flex items-center gap-3">
@@ -493,10 +534,29 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                 <p className="text-xs font-extrabold text-beastly-beige/30 uppercase tracking-wider">{filtered.length} créateur{filtered.length > 1 ? 's' : ''} trouvé{filtered.length > 1 ? 's' : ''}</p>
             )}
 
-            {/* Creator Grid — hidden at idle if no manual search */}
+            {/* Creator Grid */}
             {(agentState === 'complete' || (agentState === 'idle' && (search || niche !== 'Tous' || platform !== 'Tous'))) && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {displayCreators.map(creator => {
+                <div className="space-y-4">
+                    {/* Segment filter active header */}
+                    {agentState === 'complete' && selectedSeg && (
+                        <div className="flex items-center justify-between px-1">
+                            <div className="flex items-center gap-2.5">
+                                <span className="text-xl">{selectedSeg.icon}</span>
+                                <div>
+                                    <p className="text-sm font-black text-beastly-beige">Segment — {selectedSeg.label}</p>
+                                    <p className="text-[10px] font-bold text-beastly-beige/40">{selectedNanos.length} nano-créateurs · {selectedSeg.desc}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setSelectedPopulation(null)}
+                                className="text-xs font-extrabold text-beastly-beige/40 hover:text-beastly-beige transition-colors px-3 py-1.5 bg-beastly-beige/5 rounded-full border border-beastly-beige/10"
+                            >
+                                Voir tous ×
+                            </button>
+                        </div>
+                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {(agentState === 'complete' && selectedPopulation && selectedNanos.length > 0 ? selectedNanos : displayCreators).map(creator => {
                         const isChecked = checkedIds.has(creator.id);
                         return (
                             <div key={creator.id} className={`p-5 bg-beastly-beige rounded-2xl space-y-4 group relative transition-all ${agentState === 'complete' && isChecked ? 'ring-2 ring-beastly-green' : ''}`}>
@@ -525,7 +585,7 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                                             </span>
                                             {agentState === 'complete' && (
                                                 <span className="inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-beastly-orange/20 text-beastly-orange">
-                                                    Sélectionné IA
+                                                    {selectedPopulation ? `Nano · ${selectedSeg?.icon}` : 'Sélectionné IA'}
                                                 </span>
                                             )}
                                         </div>
@@ -574,11 +634,12 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                             </div>
                         );
                     })}
+                    </div>
                 </div>
             )}
 
-            {/* ── Population Chart ── appears after AI scan ── */}
-            {agentState === 'complete' && (
+            {/* ── Population Chart placeholder — replaced by network graph above ── */}
+            {agentState === 'complete' && false && (
                 <div className="space-y-5">
 
                     {/* Network graph card */}
