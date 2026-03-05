@@ -86,7 +86,7 @@ export default function EventBrief() {
   return (
     <div className="min-h-screen bg-beastly-dark">
       {/* Top bar */}
-      <div className="px-5 pt-8 pb-4 flex items-center gap-3">
+      <div className="nav-safe-top px-5 pb-4 flex items-center gap-3">
         <button
           onClick={() => navigate(`/event/${token}/dashboard`)}
           className="flex items-center gap-2 px-4 py-2 bg-beastly-beige rounded-full text-sm font-bold text-beastly-dark hover:bg-beastly-beige/80 transition-colors group"

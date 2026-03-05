@@ -131,11 +131,11 @@ export default function EventAI() {
   }
 
   return (
-    <div className="min-h-screen bg-beastly-dark relative overflow-x-hidden">
+    <div className="min-h-screen bg-beastly-dark relative overflow-x-clip">
       <GlowLightning className="absolute -top-10 -right-10 opacity-15 pointer-events-none" size={250} color="#b4ff00" />
 
       {/* Top bar */}
-      <div className="px-5 pt-8 pb-4 flex items-center gap-3 relative z-10">
+      <div className="nav-safe-top px-5 pb-4 flex items-center gap-3 relative z-10">
         <button
           onClick={() => navigate(`/event/${token}/brief`)}
           className="flex items-center gap-2 px-4 py-2 bg-beastly-beige rounded-full text-sm font-bold text-beastly-dark hover:bg-beastly-beige/80 transition-colors group"

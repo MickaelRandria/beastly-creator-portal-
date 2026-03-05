@@ -34,7 +34,7 @@ export default function EventQRCode() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Top bar — minimal, dark on white */}
-      <div className="px-5 pt-8 pb-4 flex items-center gap-3">
+      <div className="nav-safe-top px-5 pb-4 flex items-center gap-3">
         <button
           onClick={() => navigate(`/event/${token}/dashboard`)}
           className="flex items-center gap-2 px-4 py-2 bg-beastly-dark text-beastly-beige rounded-full text-sm font-bold hover:bg-beastly-dark/80 transition-colors group"

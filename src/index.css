@@ -33,6 +33,13 @@
     min-height: 100dvh;
   }
 
+  /* ─── Safe area top : encoche / Dynamic Island iOS ────────── */
+  /* viewport-fit=cover fait que le contenu passe derrière la notch.
+     .nav-safe-top pousse le premier élément sous la safe area. */
+  .nav-safe-top {
+    padding-top: max(2rem, calc(env(safe-area-inset-top) + 0.75rem));
+  }
+
   /* ─── Scrollbar discrète sur desktop ─────────────────────── */
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }

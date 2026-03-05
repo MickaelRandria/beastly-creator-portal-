@@ -60,7 +60,7 @@ export default function EventDashboard() {
   return (
     <div className="min-h-screen bg-beastly-dark">
       {/* Header */}
-      <div className="px-5 pt-8 pb-4 flex items-center justify-between">
+      <div className="nav-safe-top px-5 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-beastly-beige rounded-full flex items-center justify-center">
             <Zap className="text-beastly-dark fill-beastly-dark" size={16} />
