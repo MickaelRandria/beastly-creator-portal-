@@ -45,48 +45,130 @@ function formatFollowers(n: number) {
     return `${n}`;
 }
 
-const POPULATION_SEGMENTS = [
-    { id: 'festivaliers', label: 'Festivaliers', count: 284, color: '#b4ff00', icon: '🎪', desc: 'Fans de musique live & événements estivaux' },
-    { id: 'lifestyle',    label: 'Lifestyle',    count: 197, color: '#fc846d', icon: '✨', desc: 'Tendances, aesthetics, quotidien stylé' },
-    { id: 'food_drinks',  label: 'Drinks & Vibes', count: 156, color: '#b1def3', icon: '🍹', desc: 'Boissons, terrasses, summer vibes' },
-    { id: 'musique',      label: 'Musique & Culture', count: 142, color: '#f1d8c4', icon: '🎵', desc: 'Artistes émergents, concerts, sorties' },
-    { id: 'sport',        label: 'Sport & Outdoor', count: 89,  color: '#b4ff00', icon: '🌿', desc: 'Running, nature, bien-être actif' },
+// Couleurs par niche (palette Beastly + extensions)
+const NICHE_COLORS: Record<string, string> = {
+    Festival:  '#b4ff00',
+    Lifestyle: '#fc846d',
+    Food:      '#b1def3',
+    Musique:   '#f1d8c4',
+    Sport:     '#7effc0',
+    Mode:      '#f472b6',
+    Beauté:    '#fb923c',
+    Tech:      '#818cf8',
+    Voyage:    '#34d399',
+};
+
+// Positions normalisées des clusters (x, y entre 0 et 1)
+const CLUSTER_POSITIONS = [
+    { x: 0.20, y: 0.26 },
+    { x: 0.62, y: 0.18 },
+    { x: 0.84, y: 0.50 },
+    { x: 0.65, y: 0.78 },
+    { x: 0.28, y: 0.74 },
+    { x: 0.08, y: 0.52 },
+    { x: 0.44, y: 0.44 },
+    { x: 0.50, y: 0.85 },
 ];
 
-const NANO_BY_SEGMENT: Record<string, Creator[]> = {
-    festivaliers: [
-        { id: 'n1', name: 'Camille Roy',     handle: '@camille.festival',  niche: 'Festival',  platform: 'Instagram', followers: 8200,  engagement: 9.4,  avatar: 'https://picsum.photos/seed/nf1/100', location: 'Paris',     status: 'active', aiScore: 94, aiReason: 'Présente à Solidays chaque année, couvertures lifestyle festivalier très engageantes.' },
-        { id: 'n2', name: 'Théo Massé',      handle: '@theo.vibes',        niche: 'Festival',  platform: 'TikTok',    followers: 12400, engagement: 11.2, avatar: 'https://picsum.photos/seed/nf2/100', location: 'Lyon',      status: 'active', aiScore: 91, aiReason: 'Contenus festival spontanés, audience 18-24 très réactive, fort reach organique.' },
-        { id: 'n3', name: 'Inès Fontaine',   handle: '@ines.sunsets',      niche: 'Lifestyle', platform: 'Instagram', followers: 6800,  engagement: 10.8, avatar: 'https://picsum.photos/seed/nf3/100', location: 'Bordeaux', status: 'active', aiScore: 88, aiReason: 'Esthétique été ensoleillée, posts festival très partagés, tone naturel.' },
-        { id: 'n4', name: 'Raphaël Guez',    handle: '@raph.outdoor',      niche: 'Festival',  platform: 'TikTok',    followers: 18900, engagement: 7.6,  avatar: 'https://picsum.photos/seed/nf4/100', location: 'Marseille',status: 'active', aiScore: 86, aiReason: 'Mix musique & lifestyle, tone naturel très aligné avec l\'ADN FuzeTea.' },
-        { id: 'n5', name: 'Lucie Barre',     handle: '@lucie.goodtimes',   niche: 'Festival',  platform: 'Instagram', followers: 9700,  engagement: 8.9,  avatar: 'https://picsum.photos/seed/nf5/100', location: 'Nantes',   status: 'active', aiScore: 83, aiReason: 'Couverture d\'événements estivaux, forte communauté locale très engagée.' },
-    ],
-    lifestyle: [
-        { id: 'n6',  name: 'Sofia Nakamura', handle: '@sofia.daily',       niche: 'Lifestyle', platform: 'Instagram', followers: 14200, engagement: 8.1,  avatar: 'https://picsum.photos/seed/nl1/100', location: 'Paris',       status: 'active', aiScore: 93, aiReason: 'Quotidien stylé, audience CSP+, très bon taux de sauvegarde et de partage.' },
-        { id: 'n7',  name: 'Jules Manet',    handle: '@jules.m',           niche: 'Lifestyle', platform: 'TikTok',    followers: 22100, engagement: 6.9,  avatar: 'https://picsum.photos/seed/nl2/100', location: 'Toulouse',    status: 'active', aiScore: 89, aiReason: 'Trendsetter lifestyle urbain, fort taux de partage, très bonne visibilité organique.' },
-        { id: 'n8',  name: 'Amandine Cha',   handle: '@amandine.cha',      niche: 'Lifestyle', platform: 'Instagram', followers: 7500,  engagement: 12.3, avatar: 'https://picsum.photos/seed/nl3/100', location: 'Montpellier',status: 'active', aiScore: 92, aiReason: 'Micro-communauté très fidèle, engagement exceptionnel au regard de sa taille.' },
-        { id: 'n9',  name: 'Noé Lambert',    handle: '@noe.lmbt',          niche: 'Lifestyle', platform: 'TikTok',    followers: 11600, engagement: 9.7,  avatar: 'https://picsum.photos/seed/nl4/100', location: 'Paris',       status: 'active', aiScore: 85, aiReason: 'Contenus summer lifestyle, tone relax et authentique, fit FuzeTea parfait.' },
-        { id: 'n10', name: 'Eva Richter',    handle: '@eva.richter',       niche: 'Lifestyle', platform: 'Instagram', followers: 19800, engagement: 7.2,  avatar: 'https://picsum.photos/seed/nl5/100', location: 'Strasbourg', status: 'active', aiScore: 81, aiReason: 'Aesthetic cohérent, partenariats boissons déjà réalisés avec succès.' },
-    ],
-    food_drinks: [
-        { id: 'n11', name: 'Marco Bellini',  handle: '@marco.sips',        niche: 'Food', platform: 'TikTok',    followers: 16400, engagement: 10.5, avatar: 'https://picsum.photos/seed/nd1/100', location: 'Paris',    status: 'active', aiScore: 96, aiReason: 'Spécialiste boissons & terrasses, FuzeTea dans sa niche exacte. Fit parfait.' },
-        { id: 'n12', name: 'Chloé Vidal',    handle: '@chloe.drinks',      niche: 'Food', platform: 'Instagram', followers: 8900,  engagement: 11.8, avatar: 'https://picsum.photos/seed/nd2/100', location: 'Bordeaux', status: 'active', aiScore: 94, aiReason: 'Reviews boissons avec fort engagement, communauté très qualifiée et fidèle.' },
-        { id: 'n13', name: 'Tom Delattre',   handle: '@tom.vibes.food',    niche: 'Food', platform: 'TikTok',    followers: 23500, engagement: 8.3,  avatar: 'https://picsum.photos/seed/nd3/100', location: 'Lille',    status: 'active', aiScore: 87, aiReason: 'Summer drinks & food culture, tone décontracté très aligné FuzeTea.' },
-        { id: 'n14', name: 'Margot Sellam',  handle: '@margot.tastes',     niche: 'Food', platform: 'Instagram', followers: 6200,  engagement: 13.1, avatar: 'https://picsum.photos/seed/nd4/100', location: 'Nice',     status: 'active', aiScore: 90, aiReason: 'Nano hyper-engagée sur l\'univers tropical & drinks, compatibilité 96% avec le brief.' },
-        { id: 'n15', name: 'Alex Veron',     handle: '@alex.sip',          niche: 'Food', platform: 'TikTok',    followers: 14700, engagement: 9.1,  avatar: 'https://picsum.photos/seed/nd5/100', location: 'Lyon',     status: 'active', aiScore: 83, aiReason: 'Lifestyle drinks en extérieur, contenus ensoleillés alignés avec l\'ADN FuzeTea.' },
-    ],
-    musique: [
-        { id: 'n16', name: 'Rayan Oued',     handle: '@rayan.music',       niche: 'Musique', platform: 'TikTok',    followers: 19200, engagement: 9.8,  avatar: 'https://picsum.photos/seed/nm1/100', location: 'Paris',     status: 'active', aiScore: 88, aiReason: 'Couvre les festivals musicaux, audience jeune 16-26 très engagée.' },
-        { id: 'n17', name: 'Jade Morin',     handle: '@jade.sounds',       niche: 'Musique', platform: 'Instagram', followers: 11300, engagement: 8.7,  avatar: 'https://picsum.photos/seed/nm2/100', location: 'Rennes',    status: 'active', aiScore: 84, aiReason: 'Lifestyle musical + découvertes artistes, très active en été, contenus Solidays parfaits.' },
-        { id: 'n18', name: 'Baptiste Lefort',handle: '@bap.culture',       niche: 'Musique', platform: 'TikTok',    followers: 7400,  engagement: 12.6, avatar: 'https://picsum.photos/seed/nm3/100', location: 'Paris',     status: 'active', aiScore: 91, aiReason: 'Micro-audience culture très fidèle, contenus concerts très partagés.' },
-        { id: 'n19', name: 'Zoé Ferrier',    handle: '@zoe.playlist',      niche: 'Musique', platform: 'Instagram', followers: 15600, engagement: 7.4,  avatar: 'https://picsum.photos/seed/nm4/100', location: 'Marseille', status: 'active', aiScore: 79, aiReason: 'Curation musicale + lifestyle, bonne cohérence esthétique et ton positif.' },
-    ],
-    sport: [
-        { id: 'n20', name: 'Léon Chartier',  handle: '@leon.run',          niche: 'Sport', platform: 'Instagram', followers: 9100,  engagement: 10.2, avatar: 'https://picsum.photos/seed/ns1/100', location: 'Nantes',   status: 'active', aiScore: 82, aiReason: 'Running & outdoor, hydratation au cœur de son contenu. Fit naturel FuzeTea.' },
-        { id: 'n21', name: 'Mélodie Brunet', handle: '@melodie.outdoor',   niche: 'Sport', platform: 'TikTok',    followers: 13400, engagement: 8.8,  avatar: 'https://picsum.photos/seed/ns2/100', location: 'Grenoble', status: 'active', aiScore: 85, aiReason: 'Outdoor lifestyle, audience bien-être engagée, alignée avec FuzeTea nature.' },
-        { id: 'n22', name: 'Quentin Faure',  handle: '@quentin.active',    niche: 'Sport', platform: 'Instagram', followers: 7800,  engagement: 11.4, avatar: 'https://picsum.photos/seed/ns3/100', location: 'Toulouse', status: 'active', aiScore: 80, aiReason: 'Sport en extérieur + été, contenus très engageants sur les stories.' },
-    ],
-};
+function CreatorNetworkGraph({
+    creators,
+    selectedNiche,
+    onSelectNiche,
+}: {
+    creators: Creator[];
+    selectedNiche: string | null;
+    onSelectNiche: (niche: string | null) => void;
+}) {
+    const groups = useMemo(() => {
+        const map: Record<string, Creator[]> = {};
+        creators.forEach(c => {
+            if (!map[c.niche]) map[c.niche] = [];
+            map[c.niche].push(c);
+        });
+        return Object.entries(map)
+            .sort((a, b) => b[1].length - a[1].length)
+            .map(([niche, gc], i) => ({
+                niche,
+                creators: gc,
+                color: NICHE_COLORS[niche] || '#b4ff00',
+                pos: CLUSTER_POSITIONS[i % CLUSTER_POSITIONS.length],
+                radius: Math.min(38 + gc.length * 3, 64),
+            }));
+    }, [creators]);
+
+    const W = 600, H = 320;
+
+    return (
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 320 }}>
+            {/* Lignes de connexion décoratives entre clusters proches */}
+            {groups.map((a, i) =>
+                groups.slice(i + 1).map((b, j) => {
+                    const ax = a.pos.x * W, ay = a.pos.y * H;
+                    const bx = b.pos.x * W, by = b.pos.y * H;
+                    const dist = Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2);
+                    if (dist > 260) return null;
+                    return (
+                        <line key={`${i}-${j}`}
+                            x1={ax} y1={ay} x2={bx} y2={by}
+                            stroke="rgba(241,216,196,0.07)" strokeWidth={1}
+                        />
+                    );
+                })
+            )}
+
+            {groups.map(({ niche, creators: gc, color, pos, radius }, gi) => {
+                const cx = pos.x * W;
+                const cy = pos.y * H;
+                const isSelected = selectedNiche === niche;
+                const isDimmed  = selectedNiche !== null && !isSelected;
+
+                return (
+                    <g key={niche}
+                        onClick={() => onSelectNiche(isSelected ? null : niche)}
+                        style={{ cursor: 'pointer', opacity: isDimmed ? 0.18 : 1, transition: 'opacity 0.25s' }}
+                    >
+                        {/* Halo sélection */}
+                        {isSelected && (
+                            <circle cx={cx} cy={cy} r={radius + 22} fill={color + '18'} />
+                        )}
+                        {/* Blob principal */}
+                        <circle cx={cx} cy={cy} r={radius}
+                            fill={color + (isSelected ? '28' : '16')}
+                            stroke={color + (isSelected ? 'dd' : '45')}
+                            strokeWidth={isSelected ? 1.5 : 0.8}
+                        />
+                        {/* Points créateurs */}
+                        {gc.map((c, i) => {
+                            const angle = (i / gc.length) * 2 * Math.PI + gi * 1.3;
+                            const r = ((i % 3) / 3 * 0.55 + 0.2) * radius * 0.88;
+                            const dotR = Math.min(2.2 + c.followers / 14000, 5.5);
+                            return (
+                                <circle key={c.id}
+                                    cx={cx + Math.cos(angle) * r}
+                                    cy={cy + Math.sin(angle) * r}
+                                    r={dotR}
+                                    fill={color}
+                                    opacity={isSelected ? 0.88 : 0.5}
+                                />
+                            );
+                        })}
+                        {/* Label niche */}
+                        <text x={cx} y={cy + radius + 15}
+                            textAnchor="middle" fill={color}
+                            fontSize={10} fontWeight="800"
+                            style={{ textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: 'Inter, sans-serif' }}
+                        >{niche}</text>
+                        {/* Compteur */}
+                        <text x={cx} y={cy + radius + 27}
+                            textAnchor="middle" fill={color + '80'}
+                            fontSize={8.5} style={{ fontFamily: 'Inter, sans-serif' }}
+                        >{gc.length} profils</text>
+                    </g>
+                );
+            })}
+        </svg>
+    );
+}
 
 
 export default function Creators({ activeBrief, onSelectionChange }: CreatorsProps) {
@@ -106,8 +188,8 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
     const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
     const [inviteSent, setInviteSent] = useState(false);
 
-    // Population chart
-    const [selectedPopulation, setSelectedPopulation] = useState<string | null>(null);
+    // Niche filter (network graph interactif)
+    const [selectedNiche, setSelectedNiche] = useState<string | null>(null);
 
     const startAgent = () => {
         setAgentState('scanning_apify');
@@ -161,19 +243,20 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
 
     const displayCreators = useMemo(() => {
         if (agentState === 'complete') {
-            const sorted = [...aiEnrichedCreators];
-            if (aiSortBy === 'score') return sorted.sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0));
-            if (aiSortBy === 'reach') return sorted.sort((a, b) => b.followers - a.followers);
-            if (aiSortBy === 'engagement') return sorted.sort((a, b) => b.engagement - a.engagement);
-            if (aiSortBy === 'emv') return sorted.sort((a, b) => {
+            let base = [...aiEnrichedCreators];
+            if (selectedNiche) base = base.filter(c => c.niche === selectedNiche);
+            if (aiSortBy === 'score') return base.sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0));
+            if (aiSortBy === 'reach') return base.sort((a, b) => b.followers - a.followers);
+            if (aiSortBy === 'engagement') return base.sort((a, b) => b.engagement - a.engagement);
+            if (aiSortBy === 'emv') return base.sort((a, b) => {
                 const emvB = Math.round((b.followers * (b.engagement / 100)) * 0.15);
                 const emvA = Math.round((a.followers * (a.engagement / 100)) * 0.15);
                 return emvB - emvA;
             });
-            return sorted;
+            return base;
         }
         return filtered;
-    }, [agentState, aiEnrichedCreators, filtered, aiSortBy]);
+    }, [agentState, aiEnrichedCreators, filtered, aiSortBy, selectedNiche]);
 
     // KPIs based on checked creators
     const checkedCreators = displayCreators.filter(c => checkedIds.has(c.id));
@@ -189,9 +272,6 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
         : 0;
     const totalEMV = displayCreators.reduce((acc, c) => acc + Math.round((c.followers * (c.engagement / 100)) * 0.15), 0);
 
-    // Population derived
-    const selectedSeg = POPULATION_SEGMENTS.find(s => s.id === selectedPopulation) ?? null;
-    const selectedNanos = selectedPopulation ? (NANO_BY_SEGMENT[selectedPopulation] ?? []) : [];
 
 
     const handleInviteSelection = () => {
@@ -227,7 +307,7 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
 
             {/* AI Agent Banner — always visible when not complete */}
             {agentState !== 'complete' && (
-                <div className="p-1 relative overflow-hidden rounded-3xl bg-gradient-to-br from-beastly-green/20 via-beastly-beige/5 to-transparent border border-beastly-green/30">
+                <div className="p-1 relative overflow-hidden rounded-3xl bg-linear-to-br from-beastly-green/20 via-beastly-beige/5 to-transparent border border-beastly-green/30">
                     <div className="absolute top-0 right-0 p-10 opacity-10">
                         <GlowLightning />
                     </div>
@@ -296,7 +376,7 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                         </div>
 
                         {/* Pipeline Visual */}
-                        <div className="hidden md:flex flex-col gap-3 min-w-[200px]">
+                        <div className="hidden md:flex flex-col gap-3 min-w-50">
                             <div className={`p-4 rounded-xl border ${agentState === 'scanning_apify' ? 'border-beastly-orange bg-beastly-orange/10' : 'border-beastly-beige/10 bg-beastly-dark/50'} flex items-center gap-3 transition-colors`}>
                                 <DatabaseZap size={20} className={agentState === 'scanning_apify' ? 'text-beastly-orange' : 'text-beastly-beige/20'} />
                                 <div>
@@ -349,7 +429,7 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                                     </div>
                                 </div>
                                 <div className="w-full h-3 bg-beastly-dark rounded-full overflow-hidden p-0.5 border border-beastly-beige/10">
-                                    <div className="h-full bg-gradient-to-r from-beastly-green/50 to-beastly-green rounded-full relative" style={{ width: `${Math.min(100, (allReach / (activeBrief ? activeBrief.targetReach : 420000)) * 100)}%` }}>
+                                    <div className="h-full bg-linear-to-r from-beastly-green/50 to-beastly-green rounded-full relative" style={{ width: `${Math.min(100, (allReach / (activeBrief ? activeBrief.targetReach : 420000)) * 100)}%` }}>
                                         <div className="absolute inset-0 bg-white/20 animate-pulse" />
                                     </div>
                                 </div>
@@ -427,43 +507,26 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                 </div>
             )}
 
-            {/* ── Network Graph — avant la liste des créateurs ── */}
+            {/* ── Network Graph interactif — avant la liste ── */}
             {agentState === 'complete' && (
                 <div className="bg-beastly-dark/80 border border-beastly-beige/10 rounded-3xl overflow-hidden">
-                    <div className="px-6 pt-6 pb-2 flex items-center gap-3">
+                    <div className="px-6 pt-6 pb-3 flex items-center gap-3">
                         <div className="p-2.5 bg-beastly-orange/20 rounded-xl">
                             <Target size={20} className="text-beastly-orange" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black text-beastly-beige">Répartition des communautés</h3>
+                            <h3 className="text-xl font-black text-beastly-beige">Carte des communautés</h3>
                             <p className="text-[11px] font-bold text-beastly-beige/40 mt-0.5">
-                                Clique sur un segment pour filtrer les créateurs ci-dessous
+                                Clique sur un cluster pour filtrer les créateurs ci-dessous
                             </p>
                         </div>
                     </div>
-                    <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-beastly-beige/50 px-6 pb-3">
-                        {POPULATION_SEGMENTS.reduce((a, s) => a + s.count, 0)} profils · {POPULATION_SEGMENTS.length} segments identifiés
-                    </p>
-                    <iframe
-                        src="https://flo.uri.sh/visualisation/27810435/embed"
-                        title="Répartition des communautés"
-                        className="w-full border-0"
-                        style={{ height: 500 }}
-                        sandbox="allow-same-origin allow-forms allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
-                    />
-                    <div className="flex flex-wrap gap-3 px-6 pb-5">
-                        {POPULATION_SEGMENTS.map(seg => (
-                            <button
-                                key={seg.id}
-                                onClick={() => setSelectedPopulation(prev => prev === seg.id ? null : seg.id)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all ${selectedPopulation === seg.id ? 'ring-1 ring-white/20' : 'opacity-60 hover:opacity-90'}`}
-                                style={{ backgroundColor: seg.color + (selectedPopulation === seg.id ? 'ff' : '33'), color: '#000' }}
-                            >
-                                <span>{seg.icon}</span>
-                                <span style={{ color: selectedPopulation === seg.id ? '#000' : seg.color }}>{seg.label}</span>
-                                <span className="ml-1 opacity-60">{seg.count}</span>
-                            </button>
-                        ))}
+                    <div className="px-4 pb-6">
+                        <CreatorNetworkGraph
+                            creators={aiEnrichedCreators}
+                            selectedNiche={selectedNiche}
+                            onSelectNiche={setSelectedNiche}
+                        />
                     </div>
                 </div>
             )}
@@ -537,18 +600,18 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
             {/* Creator Grid */}
             {(agentState === 'complete' || (agentState === 'idle' && (search || niche !== 'Tous' || platform !== 'Tous'))) && (
                 <div className="space-y-4">
-                    {/* Segment filter active header */}
-                    {agentState === 'complete' && selectedSeg && (
+                    {/* Niche filter active header */}
+                    {agentState === 'complete' && selectedNiche && (
                         <div className="flex items-center justify-between px-1">
                             <div className="flex items-center gap-2.5">
-                                <span className="text-xl">{selectedSeg.icon}</span>
+                                <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: NICHE_COLORS[selectedNiche] || '#b4ff00' }} />
                                 <div>
-                                    <p className="text-sm font-black text-beastly-beige">Segment — {selectedSeg.label}</p>
-                                    <p className="text-[10px] font-bold text-beastly-beige/40">{selectedNanos.length} nano-créateurs · {selectedSeg.desc}</p>
+                                    <p className="text-sm font-black text-beastly-beige">Niche — {selectedNiche}</p>
+                                    <p className="text-[10px] font-bold text-beastly-beige/40">{displayCreators.length} créateur{displayCreators.length > 1 ? 's' : ''} dans ce segment</p>
                                 </div>
                             </div>
                             <button
-                                onClick={() => setSelectedPopulation(null)}
+                                onClick={() => setSelectedNiche(null)}
                                 className="text-xs font-extrabold text-beastly-beige/40 hover:text-beastly-beige transition-colors px-3 py-1.5 bg-beastly-beige/5 rounded-full border border-beastly-beige/10"
                             >
                                 Voir tous ×
@@ -556,7 +619,7 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                         </div>
                     )}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {(agentState === 'complete' && selectedPopulation && selectedNanos.length > 0 ? selectedNanos : displayCreators).map(creator => {
+                    {displayCreators.map(creator => {
                         const isChecked = checkedIds.has(creator.id);
                         return (
                             <div key={creator.id} className={`p-5 bg-beastly-beige rounded-2xl space-y-4 group relative transition-all ${agentState === 'complete' && isChecked ? 'ring-2 ring-beastly-green' : ''}`}>
@@ -585,7 +648,7 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                                             </span>
                                             {agentState === 'complete' && (
                                                 <span className="inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-beastly-orange/20 text-beastly-orange">
-                                                    {selectedPopulation ? `Nano · ${selectedSeg?.icon}` : 'Sélectionné IA'}
+                                                    {selectedNiche ? `Niche · ${selectedNiche}` : 'Sélectionné IA'}
                                                 </span>
                                             )}
                                         </div>
@@ -638,130 +701,6 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                 </div>
             )}
 
-            {/* ── Population Chart placeholder — replaced by network graph above ── */}
-            {agentState === 'complete' && false && (
-                <div className="space-y-5">
-
-                    {/* Network graph card */}
-                    <div className="bg-beastly-dark/80 border border-beastly-beige/10 rounded-3xl overflow-hidden">
-                        <div className="px-6 pt-6 pb-2 flex items-center gap-3">
-                            <div className="p-2.5 bg-beastly-orange/20 rounded-xl">
-                                <Target size={20} className="text-beastly-orange" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-black text-beastly-beige">Répartition des communautés</h3>
-                                <p className="text-[11px] font-bold text-beastly-beige/40 mt-0.5">
-                                    Clique sur un segment pour générer son pack de nano-créateurs
-                                </p>
-                            </div>
-                        </div>
-                        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-beastly-beige/50 px-6 pb-3 ml-13">
-                            {POPULATION_SEGMENTS.reduce((a, s) => a + s.count, 0)} profils · {POPULATION_SEGMENTS.length} segments identifiés
-                        </p>
-
-                        {/* Flourish gephi network graph */}
-                        <iframe
-                            src="https://flo.uri.sh/visualisation/27810435/embed"
-                            title="Répartition des communautés"
-                            className="w-full border-0"
-                            style={{ height: 500 }}
-                            sandbox="allow-same-origin allow-forms allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
-                        />
-
-                        {/* Legend */}
-                        <div className="flex flex-wrap gap-3 px-6 pb-5">
-                            {POPULATION_SEGMENTS.map(seg => (
-                                <button
-                                    key={seg.id}
-                                    onClick={() => setSelectedPopulation(prev => prev === seg.id ? null : seg.id)}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all ${selectedPopulation === seg.id ? 'ring-1 ring-white/20' : 'opacity-60 hover:opacity-90'}`}
-                                    style={{ backgroundColor: seg.color + (selectedPopulation === seg.id ? 'ff' : '33'), color: '#000' }}
-                                >
-                                    <span>{seg.icon}</span>
-                                    <span style={{ color: selectedPopulation === seg.id ? '#000' : seg.color }}>{seg.label}</span>
-                                    <span className="ml-1 opacity-60">{seg.count}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Nano influencer pack for selected segment */}
-                    {selectedSeg && selectedNanos.length > 0 && (
-                        <div className="p-6 md:p-8 bg-beastly-beige/5 border border-beastly-green/20 rounded-3xl space-y-5 relative overflow-hidden">
-                            <div
-                                className="absolute top-0 right-0 w-64 h-64 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none"
-                                style={{ backgroundColor: selectedSeg.color + '18' }}
-                            />
-                            <div className="flex items-center justify-between relative z-10 flex-wrap gap-4">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-2xl">{selectedSeg.icon}</span>
-                                    <div>
-                                        <h3 className="text-xl font-black text-beastly-beige">Pack Nano — {selectedSeg.label}</h3>
-                                        <p className="text-xs font-bold text-beastly-beige/40">{selectedSeg.desc} · {selectedNanos.length} profils générés</p>
-                                    </div>
-                                </div>
-                                <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full bg-beastly-green/10 text-beastly-green border border-beastly-green/20 shrink-0">
-                                    Nano · 5k–25k abonnés
-                                </span>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
-                                {selectedNanos.map(creator => (
-                                    <div key={creator.id} className={`p-5 bg-beastly-beige rounded-2xl space-y-4 transition-all ${checkedIds.has(creator.id) ? 'ring-2 ring-beastly-green' : ''}`}>
-                                        <div className="flex items-start gap-3">
-                                            <img src={creator.avatar} alt={creator.name} className="w-12 h-12 rounded-full bg-beastly-dark" />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-black text-beastly-dark text-sm">{creator.name}</p>
-                                                <p className="text-xs font-bold text-beastly-dark/50">{creator.handle}</p>
-                                                <div className="flex items-center gap-1.5 mt-1">
-                                                    <span className={`inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${platformColors[creator.platform] || 'bg-beastly-dark/10 text-beastly-dark/50'}`}>
-                                                        {creator.platform}
-                                                    </span>
-                                                    <span className="inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-beastly-green/20 text-beastly-dark">
-                                                        Nano
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-3 gap-2">
-                                            <div className="p-2 bg-beastly-dark rounded-xl text-center">
-                                                <p className="text-sm font-black text-beastly-green">{formatFollowers(creator.followers)}</p>
-                                                <p className="text-[8px] font-extrabold text-beastly-beige/40 uppercase tracking-wider">Abonnés</p>
-                                            </div>
-                                            <div className="p-2 bg-beastly-dark rounded-xl text-center">
-                                                <p className="text-sm font-black text-beastly-orange">{creator.engagement}%</p>
-                                                <p className="text-[8px] font-extrabold text-beastly-beige/40 uppercase tracking-wider">Engagement</p>
-                                            </div>
-                                            <div className="p-2 bg-beastly-dark rounded-xl text-center">
-                                                <p className="text-sm font-black text-beastly-blue">{creator.aiScore}</p>
-                                                <p className="text-[8px] font-extrabold text-beastly-beige/40 uppercase tracking-wider">Score IA</p>
-                                            </div>
-                                        </div>
-
-                                        {creator.aiReason && (
-                                            <div className="p-3 bg-beastly-dark border border-beastly-blue/30 rounded-xl">
-                                                <div className="flex items-center gap-2 mb-1.5">
-                                                    <Sparkles size={11} className="text-beastly-blue" />
-                                                    <span className="text-[10px] font-black uppercase tracking-wider text-beastly-beige/80">Analyse IA</span>
-                                                </div>
-                                                <p className="text-[10px] font-bold text-beastly-beige/60 italic leading-relaxed">"{creator.aiReason}"</p>
-                                            </div>
-                                        )}
-
-                                        <button
-                                            onClick={() => toggleCheck(creator.id)}
-                                            className={`w-full py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all ${checkedIds.has(creator.id) ? 'bg-beastly-green text-beastly-dark' : 'bg-beastly-dark/10 text-beastly-dark/60 hover:bg-beastly-dark/20'}`}
-                                        >
-                                            {checkedIds.has(creator.id) ? '✓ Ajouté à la sélection' : '+ Ajouter à la sélection'}
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )}
         </div>
     );
 }
