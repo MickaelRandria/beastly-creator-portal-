@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowLeft, Download, ExternalLink, Image, Music, Link } from 'lucide-react';
+import { ArrowLeft, Download, Image, Music, Link } from 'lucide-react';
 import { getInfluencerByToken, mockEvent } from '../../lib/mockData';
 
 type AssetType = 'image' | 'audio' | 'link';
@@ -71,9 +71,9 @@ export default function EventAssets() {
         <div className="space-y-3">
           {mockEvent.assets.map((asset, i) => {
             const config = typeConfig[asset.type];
-            const isLink = asset.type === 'link';
             const isDone = downloaded.has(asset.id);
 
+            const href = (asset as any).file || (asset as any).url;
             return (
               <motion.div
                 key={asset.id}
@@ -95,32 +95,20 @@ export default function EventAssets() {
                   </span>
                 </div>
 
-                {/* Action */}
-                {isLink ? (
-                  <a
-                    href={(asset as any).url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-4 py-2.5 bg-beastly-dark text-beastly-beige text-xs font-extrabold rounded-xl uppercase tracking-wider hover:bg-beastly-dark/80 transition-all shrink-0"
-                  >
-                    <ExternalLink size={12} />
-                    Ouvrir
-                  </a>
-                ) : (
-                  <a
-                    href={(asset as any).file}
-                    download={asset.name}
-                    onClick={() => handleDownload(asset.id)}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-extrabold rounded-xl uppercase tracking-wider transition-all shrink-0 ${
-                      isDone
-                        ? 'bg-beastly-green text-beastly-dark'
-                        : 'bg-beastly-dark text-beastly-beige hover:bg-beastly-dark/80'
-                    }`}
-                  >
-                    <Download size={12} />
-                    {isDone ? 'Téléchargé ✓' : 'Télécharger'}
-                  </a>
-                )}
+                {/* Télécharger uniquement */}
+                <a
+                  href={href}
+                  download={asset.name}
+                  onClick={() => handleDownload(asset.id)}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-extrabold rounded-xl uppercase tracking-wider transition-all shrink-0 ${
+                    isDone
+                      ? 'bg-beastly-green text-beastly-dark'
+                      : 'bg-beastly-dark text-beastly-beige hover:bg-beastly-dark/80'
+                  }`}
+                >
+                  <Download size={12} />
+                  {isDone ? 'Téléchargé ✓' : 'Télécharger'}
+                </a>
               </motion.div>
             );
           })}
