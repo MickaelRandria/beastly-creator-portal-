@@ -68,10 +68,12 @@ function OPSPortal() {
   };
 
   return (
-    <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
-      {renderContent()}
+    <>
+      <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
+        {renderContent()}
+      </Layout>
       <ProcessStepper currentStep={campaignStep} onNavigate={setActiveTab} />
-    </Layout>
+    </>
   );
 }
 
