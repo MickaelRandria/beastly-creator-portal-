@@ -70,14 +70,26 @@ const CLUSTER_POSITIONS = [
     { x: 0.50, y: 0.85 },
 ];
 
+// Pseudo-random déterministe basé sur l'id du créateur
+function seededXY(seed: string, W: number, H: number, pad = 0.08) {
+    let h = 5381;
+    for (let i = 0; i < seed.length; i++) h = ((h << 5) + h + seed.charCodeAt(i)) >>> 0;
+    const x = pad + ((h % 10000) / 10000) * (1 - pad * 2);
+    const h2 = (h * 1664525 + 1013904223) >>> 0;
+    const y = pad + ((h2 % 10000) / 10000) * (1 - pad * 2);
+    return { x: x * W, y: y * H };
+}
+
 function CreatorNetworkGraph({
     creators,
     selectedNiche,
     onSelectNiche,
+    mode,
 }: {
     creators: Creator[];
     selectedNiche: string | null;
     onSelectNiche: (niche: string | null) => void;
+    mode: 'cloud' | 'clusters';
 }) {
     const groups = useMemo(() => {
         const map: Record<string, Creator[]> = {};
@@ -96,10 +108,45 @@ function CreatorNetworkGraph({
             }));
     }, [creators]);
 
-    const W = 600, H = 320;
+    const W = 600, H = 300;
 
+    if (mode === 'cloud') {
+        // Vue nuage : tous les points mélangés, colorés par niche
+        const nicheList = groups.map(g => g.niche);
+        return (
+            <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 300 }}>
+                {creators.map(c => {
+                    const { x, y } = seededXY(c.id, W, H);
+                    const color = NICHE_COLORS[c.niche] || '#b4ff00';
+                    const dotR = Math.min(2.5 + c.followers / 12000, 6);
+                    return (
+                        <circle key={c.id}
+                            cx={x} cy={y} r={dotR}
+                            fill={color} opacity={0.62}
+                        />
+                    );
+                })}
+                {/* Légende compacte en bas */}
+                {nicheList.map((niche, i) => {
+                    const color = NICHE_COLORS[niche] || '#b4ff00';
+                    const col = i % 4;
+                    const row = Math.floor(i / 4);
+                    return (
+                        <g key={niche} transform={`translate(${14 + col * 148}, ${H - 36 + row * 16})`}>
+                            <circle cx={5} cy={5} r={4} fill={color} opacity={0.8} />
+                            <text x={13} y={9} fill={color} fontSize={9} fontWeight="700"
+                                style={{ fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em' }}
+                            >{niche}</text>
+                        </g>
+                    );
+                })}
+            </svg>
+        );
+    }
+
+    // Vue clusters (mode interactif)
     return (
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 320 }}>
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 300 }}>
             {/* Lignes de connexion décoratives entre clusters proches */}
             {groups.map((a, i) =>
                 groups.slice(i + 1).map((b, j) => {
@@ -127,17 +174,14 @@ function CreatorNetworkGraph({
                         onClick={() => onSelectNiche(isSelected ? null : niche)}
                         style={{ cursor: 'pointer', opacity: isDimmed ? 0.18 : 1, transition: 'opacity 0.25s' }}
                     >
-                        {/* Halo sélection */}
                         {isSelected && (
                             <circle cx={cx} cy={cy} r={radius + 22} fill={color + '18'} />
                         )}
-                        {/* Blob principal */}
                         <circle cx={cx} cy={cy} r={radius}
                             fill={color + (isSelected ? '28' : '16')}
                             stroke={color + (isSelected ? 'dd' : '45')}
                             strokeWidth={isSelected ? 1.5 : 0.8}
                         />
-                        {/* Points créateurs */}
                         {gc.map((c, i) => {
                             const angle = (i / gc.length) * 2 * Math.PI + gi * 1.3;
                             const r = ((i % 3) / 3 * 0.55 + 0.2) * radius * 0.88;
@@ -152,13 +196,11 @@ function CreatorNetworkGraph({
                                 />
                             );
                         })}
-                        {/* Label niche */}
                         <text x={cx} y={cy + radius + 15}
                             textAnchor="middle" fill={color}
                             fontSize={10} fontWeight="800"
                             style={{ textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: 'Inter, sans-serif' }}
                         >{niche}</text>
-                        {/* Compteur */}
                         <text x={cx} y={cy + radius + 27}
                             textAnchor="middle" fill={color + '80'}
                             fontSize={8.5} style={{ fontFamily: 'Inter, sans-serif' }}
@@ -190,6 +232,9 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
 
     // Niche filter (network graph interactif)
     const [selectedNiche, setSelectedNiche] = useState<string | null>(null);
+
+    // Vue du graph : nuage mixte ou clusters séparés
+    const [graphMode, setGraphMode] = useState<'cloud' | 'clusters'>('cloud');
 
     const startAgent = () => {
         setAgentState('scanning_apify');
@@ -510,15 +555,34 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
             {/* ── Network Graph interactif — avant la liste ── */}
             {agentState === 'complete' && (
                 <div className="bg-beastly-dark/80 border border-beastly-beige/10 rounded-3xl overflow-hidden">
-                    <div className="px-6 pt-6 pb-3 flex items-center gap-3">
-                        <div className="p-2.5 bg-beastly-orange/20 rounded-xl">
-                            <Target size={20} className="text-beastly-orange" />
+                    <div className="px-6 pt-6 pb-3 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-beastly-orange/20 rounded-xl">
+                                <Target size={20} className="text-beastly-orange" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-black text-beastly-beige">Carte des communautés</h3>
+                                <p className="text-[11px] font-bold text-beastly-beige/40 mt-0.5">
+                                    {graphMode === 'clusters'
+                                        ? 'Clique sur un cluster pour filtrer les créateurs ci-dessous'
+                                        : 'Vue d\'ensemble — tous les créateurs par niche'}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="text-xl font-black text-beastly-beige">Carte des communautés</h3>
-                            <p className="text-[11px] font-bold text-beastly-beige/40 mt-0.5">
-                                Clique sur un cluster pour filtrer les créateurs ci-dessous
-                            </p>
+                        {/* Toggle vue */}
+                        <div className="flex items-center gap-1 p-1 bg-beastly-beige/5 border border-beastly-beige/10 rounded-full shrink-0">
+                            <button
+                                onClick={() => { setGraphMode('cloud'); setSelectedNiche(null); }}
+                                className={`px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all ${graphMode === 'cloud' ? 'bg-beastly-beige text-beastly-dark' : 'text-beastly-beige/50 hover:text-beastly-beige/80'}`}
+                            >
+                                Nuage
+                            </button>
+                            <button
+                                onClick={() => setGraphMode('clusters')}
+                                className={`px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all ${graphMode === 'clusters' ? 'bg-beastly-beige text-beastly-dark' : 'text-beastly-beige/50 hover:text-beastly-beige/80'}`}
+                            >
+                                Clusters
+                            </button>
                         </div>
                     </div>
                     <div className="px-4 pb-6">
@@ -526,6 +590,7 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                             creators={aiEnrichedCreators}
                             selectedNiche={selectedNiche}
                             onSelectNiche={setSelectedNiche}
+                            mode={graphMode}
                         />
                     </div>
                 </div>
