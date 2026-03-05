@@ -70,26 +70,14 @@ const CLUSTER_POSITIONS = [
     { x: 0.50, y: 0.85 },
 ];
 
-// Pseudo-random déterministe basé sur l'id du créateur
-function seededXY(seed: string, W: number, H: number, pad = 0.08) {
-    let h = 5381;
-    for (let i = 0; i < seed.length; i++) h = ((h << 5) + h + seed.charCodeAt(i)) >>> 0;
-    const x = pad + ((h % 10000) / 10000) * (1 - pad * 2);
-    const h2 = (h * 1664525 + 1013904223) >>> 0;
-    const y = pad + ((h2 % 10000) / 10000) * (1 - pad * 2);
-    return { x: x * W, y: y * H };
-}
-
 function CreatorNetworkGraph({
     creators,
     selectedNiche,
     onSelectNiche,
-    mode,
 }: {
     creators: Creator[];
     selectedNiche: string | null;
     onSelectNiche: (niche: string | null) => void;
-    mode: 'cloud' | 'clusters';
 }) {
     const groups = useMemo(() => {
         const map: Record<string, Creator[]> = {};
@@ -109,40 +97,6 @@ function CreatorNetworkGraph({
     }, [creators]);
 
     const W = 600, H = 300;
-
-    if (mode === 'cloud') {
-        // Vue nuage : tous les points mélangés, colorés par niche
-        const nicheList = groups.map(g => g.niche);
-        return (
-            <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 300 }}>
-                {creators.map(c => {
-                    const { x, y } = seededXY(c.id, W, H);
-                    const color = NICHE_COLORS[c.niche] || '#b4ff00';
-                    const dotR = Math.min(2.5 + c.followers / 12000, 6);
-                    return (
-                        <circle key={c.id}
-                            cx={x} cy={y} r={dotR}
-                            fill={color} opacity={0.62}
-                        />
-                    );
-                })}
-                {/* Légende compacte en bas */}
-                {nicheList.map((niche, i) => {
-                    const color = NICHE_COLORS[niche] || '#b4ff00';
-                    const col = i % 4;
-                    const row = Math.floor(i / 4);
-                    return (
-                        <g key={niche} transform={`translate(${14 + col * 148}, ${H - 36 + row * 16})`}>
-                            <circle cx={5} cy={5} r={4} fill={color} opacity={0.8} />
-                            <text x={13} y={9} fill={color} fontSize={9} fontWeight="700"
-                                style={{ fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em' }}
-                            >{niche}</text>
-                        </g>
-                    );
-                })}
-            </svg>
-        );
-    }
 
     // Vue clusters (mode interactif)
     return (
@@ -594,13 +548,23 @@ export default function Creators({ activeBrief, onSelectionChange }: CreatorsPro
                             </button>
                         </div>
                     </div>
-                    <div className="px-4 pb-6">
-                        <CreatorNetworkGraph
-                            creators={aiEnrichedCreators}
-                            selectedNiche={selectedNiche}
-                            onSelectNiche={setSelectedNiche}
-                            mode={graphMode}
-                        />
+                    <div className={graphMode === 'cloud' ? '' : 'px-4 pb-6'}>
+                        {graphMode === 'cloud' ? (
+                            <iframe
+                                src="https://flo.uri.sh/visualisation/27810435/embed"
+                                title="Interactive or visual content"
+                                frameBorder={0}
+                                scrolling="no"
+                                style={{ width: '100%', height: 600, display: 'block' }}
+                                sandbox="allow-same-origin allow-forms allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
+                            />
+                        ) : (
+                            <CreatorNetworkGraph
+                                creators={aiEnrichedCreators}
+                                selectedNiche={selectedNiche}
+                                onSelectNiche={setSelectedNiche}
+                            />
+                        )}
                     </div>
                 </div>
             )}
